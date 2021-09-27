@@ -30,14 +30,15 @@
             :id="`table-${table.id}`"
             :key="table.id"
             class="h-8 w-8 bg-black"
-            @click="openSettings($event, table)"
+            @click="openSettings($event, table.id)"
           />
           <OverlayPanel ref="op">
             <img
               src="https://via.placeholder.com/150"
               alt="Nature Image"
             >
-            <h1>{{ tables.find(t => t.id === selectedTableId).id }}</h1>
+            <h1>{{ currentTable.id }}</h1>
+            <Button @click="test" />
           </OverlayPanel>
         </div>
       </div>
@@ -46,12 +47,12 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeUpdate, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { PrimeIcons } from 'primevue/api';
 import interact from 'interactjs';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as UUIDv4 } from 'uuid';
 
-interface Table {id: string; position: {x:number; y:number}}
+interface Table {id: string; test: number; position: {x:number; y:number}}
 
 const tables = ref<Table[]>([]);
 
@@ -88,13 +89,14 @@ const items = ref([
 ]);
 
 function addTable() {
-  const id = uuidv4();
+  const id = UUIDv4();
   tables.value.push({
     id,
     position: {
       x: 0,
       y: 0,
     },
+    test: 0,
   });
   interact(`#table-${id}`).draggable({
     modifiers: [
@@ -124,11 +126,17 @@ function removeTable() {
   console.log('remove');
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const op = ref();
 
-function openSettings(e: MouseEvent, table: Table) {
-  selectedTableId.value = table.id;
+function openSettings(e: MouseEvent, tableId: string) {
+  selectedTableId.value = tableId;
   op.value.toggle(e);
+}
+
+const currentTable = computed(() => tables.value.find((t) => t.id === selectedTableId.value));
+
+function test() {
+  if (!currentTable.value) return;
+  currentTable.value.test += 1;
 }
 </script>
