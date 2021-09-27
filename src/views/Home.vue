@@ -30,7 +30,15 @@
             :id="`table-${table.id}`"
             :key="table.id"
             class="h-8 w-8 bg-black"
+            @click="openSettings($event, table)"
           />
+          <OverlayPanel ref="op">
+            <img
+              src="https://via.placeholder.com/150"
+              alt="Nature Image"
+            >
+            <h1>{{ tables.find(t => t.id === selectedTableId).id }}</h1>
+          </OverlayPanel>
         </div>
       </div>
     </div>
@@ -38,12 +46,16 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { onBeforeUpdate, ref } from 'vue';
 import { PrimeIcons } from 'primevue/api';
 import interact from 'interactjs';
+import { v4 as uuidv4 } from 'uuid';
 
-const tables = ref([] as {id: number; position: {x:number; y:number}}[]);
+interface Table {id: string; position: {x:number; y:number}}
 
+const tables = ref<Table[]>([]);
+
+const selectedTableId = ref<string>('');
 const items = ref([
   {
     label: 'Options',
@@ -76,9 +88,7 @@ const items = ref([
 ]);
 
 function addTable() {
-  console.log('add');
-  const id = Math.floor(Math.random() * 1000) + 1;
-  console.log(id);
+  const id = uuidv4();
   tables.value.push({
     id,
     position: {
@@ -112,5 +122,13 @@ function addTable() {
 
 function removeTable() {
   console.log('remove');
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const op = ref();
+
+function openSettings(e: MouseEvent, table: Table) {
+  selectedTableId.value = table.id;
+  op.value.toggle(e);
 }
 </script>
