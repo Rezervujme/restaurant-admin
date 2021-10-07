@@ -118,7 +118,9 @@ const tables = ref<Table[]>([]);
 
 const selectedTableId = ref<string>('');
 
-const currentTable = computed(() => tables.value.find((t) => t.id === selectedTableId.value));
+const currentTable = computed<Table|undefined>(
+  () => tables.value.find((t) => t.id === selectedTableId.value),
+);
 
 const startX = ref<number>(0);
 const startY = ref<number>(0);
