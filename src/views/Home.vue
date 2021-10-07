@@ -33,40 +33,42 @@
           <OverlayPanel
             ref="modalRef"
           >
-            <h1 class="text-2xl">
-              Stôl
-            </h1>
-            <div class="flex items-center justify-between mb-4">
-              <h5 class="text-lg mr-8">
-                Označenie:
-              </h5>
-              <InputText v-model="currentTable.label" />
-            </div>
-            <div class="flex items-center justify-between mb-4">
-              <h5 class="text-lg mr-8">
-                Tvar:
-              </h5>
-              <Dropdown
-                v-model="currentTable.shape"
-                :options="shapes"
-                option-label="name"
-                option-value="code"
-              />
-            </div>
-            <div class="flex items-center justify-between mb-4">
-              <h5 class="text-lg mr-8">
-                Počet miest:
-              </h5>
-              <InputNumber
-                v-model="currentTable.chairs"
-              />
-            </div>
-            <div class="flex justify-end">
-              <Button
-                class="p-button-danger"
-                icon="pi pi-trash"
-                @click="removeTable"
-              />
+            <div v-if="currentTable">
+              <h1 class="text-2xl">
+                Stôl
+              </h1>
+              <div class="flex items-center justify-between mb-4">
+                <h5 class="text-lg mr-8">
+                  Označenie:
+                </h5>
+                <InputText v-model="currentTable.label" />
+              </div>
+              <div class="flex items-center justify-between mb-4">
+                <h5 class="text-lg mr-8">
+                  Tvar:
+                </h5>
+                <Dropdown
+                  v-model="currentTable.shape"
+                  :options="shapes"
+                  option-label="name"
+                  option-value="code"
+                />
+              </div>
+              <div class="flex items-center justify-between mb-4">
+                <h5 class="text-lg mr-8">
+                  Počet miest:
+                </h5>
+                <InputNumber
+                  v-model="currentTable.chairs"
+                />
+              </div>
+              <div class="flex justify-end">
+                <Button
+                  class="p-button-danger"
+                  icon="pi pi-trash"
+                  @click="removeTable"
+                />
+              </div>
             </div>
           </OverlayPanel>
         </div>
@@ -265,7 +267,7 @@ function openSettings(e: MouseEvent, tableId: string) {
 function exportData() {
   if (tables.value.some((table) => table.isOverlapping)) return alert('Tables cant overlap');
   const exportedData = toRaw(tables.value);
-  console.log(exportedData);
+  return console.log(exportedData);
 }
 
 function setInitialLocation(e: MouseEvent) {
