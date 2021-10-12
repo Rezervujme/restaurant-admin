@@ -233,8 +233,8 @@ function addTable() {
     });
 }
 
-function removeTable(e: MouseEvent) {
-  modalRef.value.toggle(e);
+function removeTable() {
+  modalRef.value.hide();
 
   tables.value = tables.value.filter((table) => table.id !== currentTable.value?.id);
 }
@@ -245,14 +245,14 @@ function openSettings(e: MouseEvent, tableId: string) {
 
   if (diffX < 10 && diffY < 10) {
     selectedTableId.value = tableId;
-    modalRef.value.toggle(e);
+    modalRef.value.show(e);
   }
 }
 
 function exportData() {
   if (tables.value.every((t1, i, arr) => arr.some((t2) => t1.id !== t2.id
         && t1.position.x === t2.position.x
-        && t1.position.y === t2.position.y))) return alert('Tables can not overlap!');
+        && t1.position.y === t2.position.y))) return alert('Tables cannot overlap!');
   const exportedData = toRaw(tables.value);
   return console.log(exportedData);
 }
@@ -260,6 +260,7 @@ function exportData() {
 function setInitialLocation(e: MouseEvent) {
   startX.value = e.x;
   startY.value = e.y;
+  modalRef.value.hide();
 }
 </script>
 
