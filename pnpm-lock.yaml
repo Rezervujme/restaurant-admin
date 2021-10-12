@@ -30,7 +30,6 @@ specifiers:
   windicss: ^3.1.7
 
 dependencies:
-  '@types/uuid': 8.3.1
   interactjs: 1.10.11
   primeicons: 4.1.0
   primevue: 3.7.2
@@ -42,6 +41,7 @@ dependencies:
 devDependencies:
   '@iconify/json': 1.1.406
   '@types/node': 16.10.1
+  '@types/uuid': 8.3.1
   '@typescript-eslint/eslint-plugin': 4.31.2_3815fab247b4312be6d1f55eb1f81298
   '@typescript-eslint/parser': 4.31.2_eslint@7.32.0+typescript@4.4.3
   '@vitejs/plugin-vue': 1.9.2_vite@2.5.10
@@ -208,7 +208,7 @@ packages:
 
   /@types/uuid/8.3.1:
     resolution: {integrity: sha512-Y2mHTRAbqfFkpjldbkHGY8JIzRN6XqYRliG8/24FcHm2D2PwW24fl5xMRTVGdrb7iMrwCaIEbLWerGIkXuFWVg==}
-    dev: false
+    dev: true
 
   /@typescript-eslint/eslint-plugin/4.31.2_3815fab247b4312be6d1f55eb1f81298:
     resolution: {integrity: sha512-w63SCQ4bIwWN/+3FxzpnWrDjQRXVEGiTt9tJTRptRXeFvdZc/wLiz3FQUwNQ2CVoRGI6KUWMNUj/pk63noUfcA==}
