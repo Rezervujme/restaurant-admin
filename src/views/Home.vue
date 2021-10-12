@@ -111,7 +111,6 @@ interface Table {
     width: number
   }
   chairs: number
-  isOverlapping: boolean
 }
 
 const modalRef = ref();
@@ -162,7 +161,6 @@ function addTable() {
     shape: 'square',
     label: '',
     chairs: 0,
-    isOverlapping: false,
   });
 
   interact(`#table-${id}`)
@@ -229,19 +227,6 @@ function addTable() {
           table.position.x += event.dx;
           table.position.y += event.dy;
 
-          if (tables.value
-            .some((t) => t.id !== id
-                  && t.position.x === table.position.x
-                  && t.position.y === table.position.y
-                  && !table.isOverlapping)) {
-            table.isOverlapping = true;
-            event.target.style.backgroundColor = 'red';
-            event.target.style.opacity = 0.5;
-          } else {
-            event.target.style.backgroundColor = 'black';
-            event.target.style.opacity = 1;
-            table.isOverlapping = false;
-          }
           event.target.style.transform = `translate(${table.position.x}px, ${table.position.y}px)`;
         },
       },
@@ -265,7 +250,9 @@ function openSettings(e: MouseEvent, tableId: string) {
 }
 
 function exportData() {
-  if (tables.value.some((table) => table.isOverlapping)) return alert('Tables cant overlap');
+  if (tables.value.every((t1, i, arr) => arr.some((t2) => t1.id !== t2.id
+        && t1.position.x === t2.position.x
+        && t1.position.y === t2.position.y))) return alert('Tables can not overlap!');
   const exportedData = toRaw(tables.value);
   return console.log(exportedData);
 }
