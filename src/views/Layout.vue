@@ -1,11 +1,14 @@
 <template>
   <div class="flex">
     <Menu
-      class="ml-8 mr-4 mb-8"
+      class="ml-8 mr-4 mb-8 layout-menu"
       :model="items"
     />
-    <div class="mr-8 ml-4 flex-grow">
-      <div class="layout-container mb-4">
+    <div class="mr-8 ml-4 mb-8">
+      <div
+        class="layout-container layout-container-tables cursor-pointer"
+        @click.self="closeDetail"
+      >
         <div
           v-for="table in tables"
           :id="`table-${table.id}`"
@@ -15,51 +18,59 @@
           @mousedown="setInitialLocation"
           @mouseup="openSettings($event, table.id)"
         >
+          <!--          <div class="table-badge">-->
+          <!--            <p-->
+          <!--              class="text-white text-center text-xs leading-5"-->
+          <!--            >-->
+          <!--              {{ table.label || '?' }}-->
+          <!--            </p>-->
+          <!--          </div>-->
+
           <p class="text-white text-center">
             {{ table.chairs }}
           </p>
         </div>
-        <OverlayPanel
-          ref="modalRef"
-        >
-          <div v-if="currentTable">
-            <h1 class="text-2xl">
-              Stôl
-            </h1>
-            <div class="flex items-center justify-between mb-4">
-              <h5 class="text-lg mr-8">
-                Označenie:
-              </h5>
-              <InputText v-model="currentTable.label" />
-            </div>
-            <div class="flex items-center justify-between mb-4">
-              <h5 class="text-lg mr-8">
-                Tvar:
-              </h5>
-              <Dropdown
-                v-model="currentTable.shape"
-                :options="shapes"
-                option-label="name"
-                option-value="code"
-              />
-            </div>
-            <div class="flex items-center justify-between mb-4">
-              <h5 class="text-lg mr-8">
-                Počet miest:
-              </h5>
-              <InputNumber
-                v-model="currentTable.chairs"
-              />
-            </div>
-            <div class="flex justify-end">
-              <Button
-                class="p-button-danger"
-                icon="pi pi-trash"
-                @click="removeTable"
-              />
-            </div>
-          </div>
-        </OverlayPanel>
+      </div>
+    </div>
+    <div class="layout-container layout-container-details flex-grow mr-8 mb-8 p-4">
+      <div v-if="currentTable">
+        <div class="flex items-center justify-between mb-4">
+          <h5 class="text-lg mr-8">
+            Označenie:
+          </h5>
+          <InputText
+            v-model="currentTable.label"
+            class="w-2/5"
+          />
+        </div>
+        <div class="flex items-center justify-between mb-4">
+          <h5 class="text-lg mr-8">
+            Tvar:
+          </h5>
+          <Dropdown
+            v-model="currentTable.shape"
+            :options="shapes"
+            option-label="name"
+            option-value="code"
+            class="w-2/5"
+          />
+        </div>
+        <div class="flex items-center justify-between mb-4">
+          <h5 class="text-lg mr-8">
+            Počet miest:
+          </h5>
+          <InputNumber
+            v-model="currentTable.chairs"
+            class="chairs-input"
+          />
+        </div>
+        <div class="flex justify-end">
+          <Button
+            class="p-button-danger"
+            icon="pi pi-trash"
+            @click="removeTable"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -73,7 +84,6 @@ import {
 import { PrimeIcons } from 'primevue/api';
 import interact from 'interactjs';
 import { v4 as UUIDv4 } from 'uuid';
-import OverlayPanel from 'primevue/overlaypanel';
 
 interface Table {
   id: string
@@ -89,8 +99,6 @@ interface Table {
   }
   chairs: number
 }
-
-const modalRef = ref();
 
 const tables = ref<Table[]>([]);
 
@@ -196,8 +204,6 @@ function addTable() {
 }
 
 function removeTable() {
-  modalRef.value.hide();
-
   tables.value = tables.value.filter((table) => table.id !== currentTable.value?.id);
 }
 
@@ -207,23 +213,26 @@ function openSettings(e: MouseEvent, tableId: string) {
 
   if (diffX < 10 && diffY < 10) {
     selectedTableId.value = tableId;
-    modalRef.value.show(e);
   }
 }
 
 function exportData() {
-  if (!tables.value.length) return alert('Cannot export empty layout!');
-  if (tables.value.every((t1, i, arr) => arr.some((t2) => t1.id !== t2.id
+  const rawLayout = toRaw(tables.value);
+  if (!rawLayout.length) return alert('Cannot export empty layout!');
+  if (rawLayout.some((table) => table.label === '' || table.chairs === 0)) return alert('Please fill all the required data!');
+  if (rawLayout.every((t1, i, arr) => arr.some((t2) => t1.id !== t2.id
         && t1.position.x === t2.position.x
         && t1.position.y === t2.position.y))) return alert('Tables cannot overlap!');
-  const exportedData = toRaw(tables.value);
-  return console.log(exportedData);
+  return console.log(rawLayout);
 }
 
 function setInitialLocation(e: MouseEvent) {
   startX.value = e.x;
   startY.value = e.y;
-  modalRef.value.hide();
+}
+
+function closeDetail() {
+  selectedTableId.value = '';
 }
 
 const items = ref([
@@ -236,7 +245,7 @@ const items = ref([
         command: () => addTable(),
       },
       {
-        label: 'Export',
+        label: 'Save',
         icon: PrimeIcons.DOWNLOAD,
         command: () => exportData(),
       },
@@ -244,7 +253,7 @@ const items = ref([
 
   },
   {
-    label: 'Layouts',
+    label: 'Saved layouts',
     items: [
       {
         label: 'Layout 1',
@@ -260,9 +269,43 @@ const items = ref([
 </script>
 
 <style scoped>
-.layout-container {
+.layout-container-tables {
   height: 48rem;
   width: 48rem;
-  outline: 1px solid #DEE2E6
+}
+.layout-container-details {
+  min-width: 19.5rem;
+}
+
+.layout-container {
+  outline: 1px solid #DEE2E6;
+  border-radius: 3px;
+}
+
+.chairs-input {
+  @apply w-2/5
+}
+.chairs-input:deep(.p-inputnumber-input) {
+  @apply w-2/5 text-right
+}
+
+/*
+.table-badge {
+  position: absolute;
+  height: 1.25rem;
+  width: 1.25rem;
+  background-color: red;
+  top: 0;
+  right: 0;
+  margin-top: -8px;
+  margin-right: -8px;
+  border-radius: 100%;
+}
+ */
+</style>
+
+<style>
+.p-menu {
+  min-width: 12.5rem;
 }
 </style>

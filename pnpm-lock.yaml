@@ -3,6 +3,7 @@ lockfileVersion: 5.3
 specifiers:
   '@iconify/json': ^1.1.405
   '@types/node': ^16.9.6
+  '@types/nprogress': ^0.2.0
   '@types/uuid': ^8.3.1
   '@typescript-eslint/eslint-plugin': ^4.31.2
   '@typescript-eslint/parser': ^4.31.2
@@ -14,6 +15,7 @@ specifiers:
   eslint-plugin-import: ^2.24.2
   eslint-plugin-vue: ^7.18.0
   interactjs: ^1.10.11
+  nprogress: ^0.2.0
   primeicons: ^4.1.0
   primevue: ^3.7.2
   typescript: ^4.4.3
@@ -31,6 +33,7 @@ specifiers:
 
 dependencies:
   interactjs: 1.10.11
+  nprogress: 0.2.0
   primeicons: 4.1.0
   primevue: 3.7.2
   uuid: 8.3.2
@@ -41,6 +44,7 @@ dependencies:
 devDependencies:
   '@iconify/json': 1.1.406
   '@types/node': 16.10.1
+  '@types/nprogress': 0.2.0
   '@types/uuid': 8.3.1
   '@typescript-eslint/eslint-plugin': 4.31.2_3815fab247b4312be6d1f55eb1f81298
   '@typescript-eslint/parser': 4.31.2_eslint@7.32.0+typescript@4.4.3
@@ -200,6 +204,10 @@ packages:
 
   /@types/node/16.10.1:
     resolution: {integrity: sha512-4/Z9DMPKFexZj/Gn3LylFgamNKHm4K3QDi0gz9B26Uk0c8izYf97B5fxfpspMNkWlFupblKM/nV8+NA9Ffvr+w==}
+    dev: true
+
+  /@types/nprogress/0.2.0:
+    resolution: {integrity: sha512-1cYJrqq9GezNFPsWTZpFut/d4CjpZqA0vhqDUPFWYKF1oIyBz5qnoYMzR+0C/T96t3ebLAC1SSnwrVOm5/j74A==}
     dev: true
 
   /@types/throttle-debounce/2.1.0:
@@ -1736,6 +1744,10 @@ packages:
     dependencies:
       path-key: 3.1.1
     dev: true
+
+  /nprogress/0.2.0:
+    resolution: {integrity: sha1-y480xTIT2JVyP8urkH6UIq28r7E=}
+    dev: false
 
   /object-assign/4.1.1:
     resolution: {integrity: sha1-IQmtx5ZYh8/AXLvUQsrIv7s2CGM=}

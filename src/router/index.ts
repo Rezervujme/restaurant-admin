@@ -1,5 +1,7 @@
 import { RouteRecordRaw, createRouter, createWebHashHistory } from 'vue-router';
 
+import NProgress from 'nprogress';
+
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
@@ -39,6 +41,13 @@ const routes: RouteRecordRaw[] = [
 const router = createRouter({
   history: createWebHashHistory(),
   routes,
+});
+router.beforeEach((to, from, next) => {
+  if (from.name) NProgress.start();
+  next();
+});
+router.afterEach(() => {
+  NProgress.done();
 });
 
 export default router;
