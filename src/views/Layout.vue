@@ -13,8 +13,8 @@
           v-for="table in tables"
           :id="`table-${table.id}`"
           :key="table.id"
-          class="h-8 w-8 bg-black absolute flex justify-center items-center"
-          :class="table.shape === 'circle' ? 'rounded-full' : ''"
+          class="h-8 w-8 bg-gray-300 absolute flex justify-center items-center"
+          :class="[table.shape === 'circle' ? 'rounded-full' : '', table.id === selectedTableId ? 'border border-black' : '']"
           @mousedown="setInitialLocation"
           @mouseup="openSettings($event, table.id)"
         >
@@ -26,7 +26,7 @@
           <!--            </p>-->
           <!--          </div>-->
 
-          <p class="text-white text-center">
+          <p class="text-center">
             {{ table.chairs }}
           </p>
         </div>
@@ -117,6 +117,8 @@ const shapes = ref([
 ]);
 
 function addTable() {
+  selectedTableId.value = '';
+
   const id = UUIDv4();
   tables.value.push({
     id,
