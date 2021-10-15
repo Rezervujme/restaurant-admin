@@ -8,6 +8,7 @@
     "lint": "eslint src --ext .js,.vue,.ts --fix"
   },
   "dependencies": {
+    "@vueuse/core": "^6.5.3",
     "interactjs": "^1.10.11",
     "nprogress": "^0.2.0",
     "primeicons": "^4.1.0",

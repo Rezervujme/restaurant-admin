@@ -10,11 +10,12 @@
         @click.self="closeDetail"
       >
         <div
-          v-for="table in tables"
+          v-for="table in layout.tables"
           :id="`table-${table.id}`"
           :key="table.id"
           class="h-8 w-8 bg-gray-300 absolute flex justify-center items-center"
-          :class="[table.shape === 'circle' ? 'rounded-full' : '', table.id === selectedTableId ? 'border border-black' : '']"
+          :class="[table.shape === 'circle' ? 'rounded-full' : '',
+                   table.id === selectedTableId ? 'border border-black' : '']"
           @mousedown="setInitialLocation"
           @mouseup="openSettings($event, table.id)"
         >
@@ -27,13 +28,16 @@
           <!--          </div>-->
 
           <p class="text-center">
-            {{ table.chairs }}
+            {{ table.label || '-' }}
           </p>
         </div>
       </div>
     </div>
     <div class="layout-container layout-container-details flex-grow mr-8 mb-8 p-4">
-      <div v-if="currentTable">
+      <div
+        v-if="currentTable"
+        class="h-full flex flex-col"
+      >
         <div class="flex items-center justify-between mb-4">
           <h5 class="text-lg mr-8">
             Označenie:
@@ -64,11 +68,25 @@
             class="chairs-input"
           />
         </div>
-        <div class="flex justify-end">
+        <div class="flex justify-end mt-auto">
           <Button
             class="p-button-danger"
             icon="pi pi-trash"
             @click="removeTable"
+          />
+        </div>
+      </div>
+      <div
+        v-else
+        class="h-full flex flex-col"
+      >
+        <div class="flex items-center justify-between mb-4">
+          <h5 class="text-lg mr-8">
+            Názov:
+          </h5>
+          <InputText
+            v-model="layout.name"
+            class="w-2/5"
           />
         </div>
       </div>
@@ -84,6 +102,7 @@ import {
 import { PrimeIcons } from 'primevue/api';
 import interact from 'interactjs';
 import { v4 as UUIDv4 } from 'uuid';
+import { onKeyStroke } from '@vueuse/core';
 
 interface Table {
   id: string
@@ -100,12 +119,18 @@ interface Table {
   chairs: number
 }
 
-const tables = ref<Table[]>([]);
+interface Layout {
+  id: string;
+  name: string
+  tables: Table[]
+}
+
+const layout = ref<Layout>({ id: UUIDv4(), name: 'New Layout', tables: [] });
 
 const selectedTableId = ref<string>('');
 
 const currentTable = computed<Table|undefined>(
-  () => tables.value.find((t) => t.id === selectedTableId.value),
+  () => layout.value.tables.find((t) => t.id === selectedTableId.value),
 );
 
 const startX = ref<number>(0);
@@ -120,7 +145,7 @@ function addTable() {
   selectedTableId.value = '';
 
   const id = UUIDv4();
-  tables.value.push({
+  layout.value.tables.push({
     id,
     position: {
       x: 0,
@@ -193,7 +218,7 @@ function addTable() {
           console.log(event.type, event.target);
         },
         move(event) {
-          const table = tables.value.find((t) => t.id === id);
+          const table = layout.value.tables.find((t) => t.id === id);
           if (!table) return;
 
           table.position.x += event.dx;
@@ -206,7 +231,7 @@ function addTable() {
 }
 
 function removeTable() {
-  tables.value = tables.value.filter((table) => table.id !== currentTable.value?.id);
+  layout.value.tables = layout.value.tables.filter((table) => table.id !== currentTable.value?.id);
 }
 
 function openSettings(e: MouseEvent, tableId: string) {
@@ -219,7 +244,7 @@ function openSettings(e: MouseEvent, tableId: string) {
 }
 
 function exportData() {
-  const rawLayout = toRaw(tables.value);
+  const rawLayout = toRaw(layout.value.tables);
   if (!rawLayout.length) return alert('Cannot export empty layout!');
   if (rawLayout.some((table) => table.label === '' || table.chairs === 0)) return alert('Please fill all the required data!');
   if (rawLayout.every((t1, i, arr) => arr.some((t2) => t1.id !== t2.id
@@ -236,6 +261,9 @@ function setInitialLocation(e: MouseEvent) {
 function closeDetail() {
   selectedTableId.value = '';
 }
+
+// @ts-expect-error @vueuse/core wrong typings
+onKeyStroke(['Backspace', 'Delete'], () => removeTable());
 
 const items = ref([
   {
