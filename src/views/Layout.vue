@@ -262,8 +262,8 @@ function closeDetail() {
   selectedTableId.value = '';
 }
 
-// @ts-expect-error @vueuse/core wrong typings
-onKeyStroke(['Backspace', 'Delete'], () => removeTable());
+onKeyStroke('Delete', () => removeTable());
+onKeyStroke('Backspace', () => removeTable());
 
 const items = ref([
   {
