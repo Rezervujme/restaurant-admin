@@ -6,11 +6,12 @@
     />
     <div class="mr-8 ml-4 mb-8">
       <div
+        v-if="currentLayout"
         class="layout-container layout-container-tables cursor-pointer"
         @click.self="closeDetail"
       >
         <div
-          v-for="table in layout.tables"
+          v-for="table in currentLayout.tables"
           :id="`table-${table.id}`"
           :key="table.id"
           class="h-8 w-8 bg-gray-300 absolute flex justify-center items-center"
@@ -85,7 +86,8 @@
             Názov:
           </h5>
           <InputText
-            v-model="layout.name"
+            v-if="currentLayout"
+            v-model="currentLayout.name"
             class="w-2/5"
           />
         </div>
@@ -124,13 +126,19 @@ interface Layout {
   name: string
   tables: Table[]
 }
+const layouts = ref<Layout[]>(JSON.parse(localStorage.getItem('layouts') ?? '[]'));
+// const layout = ref<Layout>({ id: UUIDv4(), name: 'New Layout', tables: [] });
 
-const layout = ref<Layout>({ id: UUIDv4(), name: 'New Layout', tables: [] });
+const selectedLayoutId = ref<string>('');
+
+const currentLayout = computed<Layout|undefined>(
+  () => layouts.value.find((l) => l.id === selectedLayoutId.value),
+);
 
 const selectedTableId = ref<string>('');
 
 const currentTable = computed<Table|undefined>(
-  () => layout.value.tables.find((t) => t.id === selectedTableId.value),
+  () => currentLayout.value?.tables.find((t) => t.id === selectedTableId.value),
 );
 
 const startX = ref<number>(0);
@@ -142,10 +150,11 @@ const shapes = ref([
 ]);
 
 function addTable() {
+  if (!selectedLayoutId.value) return;
   selectedTableId.value = '';
 
   const id = UUIDv4();
-  layout.value.tables.push({
+  currentLayout.value.tables.push({
     id,
     position: {
       x: 0,
@@ -218,7 +227,7 @@ function addTable() {
           console.log(event.type, event.target);
         },
         move(event) {
-          const table = layout.value.tables.find((t) => t.id === id);
+          const table = currentLayout.value.tables.find((t) => t.id === id);
           if (!table) return;
 
           table.position.x += event.dx;
@@ -231,7 +240,8 @@ function addTable() {
 }
 
 function removeTable() {
-  layout.value.tables = layout.value.tables.filter((table) => table.id !== currentTable.value?.id);
+  currentLayout.value.tables = currentLayout.value.tables
+    .filter((table) => table.id !== currentTable.value?.id);
 }
 
 function openSettings(e: MouseEvent, tableId: string) {
@@ -244,13 +254,16 @@ function openSettings(e: MouseEvent, tableId: string) {
 }
 
 function exportData() {
-  const rawLayout = toRaw(layout.value.tables);
-  if (!rawLayout.length) return alert('Cannot export empty layout!');
-  if (rawLayout.some((table) => table.label === '' || table.chairs === 0)) return alert('Please fill all the required data!');
-  if (rawLayout.every((t1, i, arr) => arr.some((t2) => t1.id !== t2.id
-        && t1.position.x === t2.position.x
-        && t1.position.y === t2.position.y))) return alert('Tables cannot overlap!');
-  return console.log(rawLayout);
+  if (!selectedLayoutId.value) return false;
+  // const rawLayout = toRaw(currentLayout.value);
+  // if (!rawLayout.tables.length) return alert('Cannot export empty layout!');
+  // if (rawLayout.tables.some((table) => table.label === '' || table.chairs === 0))
+  // return alert('Please fill all the required data!');
+  // if (rawLayout.tables.every((t1, i, arr) => arr.some((t2) => t1.id !== t2.id
+  //       && t1.position.x === t2.position.x
+  //       && t1.position.y === t2.position.y))) return alert('Tables cannot overlap!');
+  // console.log(rawLayout);
+  return localStorage.setItem('layouts', JSON.stringify(toRaw(layouts.value)));
 }
 
 function setInitialLocation(e: MouseEvent) {
@@ -262,11 +275,15 @@ function closeDetail() {
   selectedTableId.value = '';
 }
 
+function loadLayout(l: Layout) {
+  selectedLayoutId.value = l.id;
+}
+
 onKeyStroke(['Delete', 'Backspace'], (e) => {
   if ((e.target as HTMLElement)?.tagName !== 'INPUT') removeTable();
 });
 
-const items = ref([
+const items = computed(() => ([
   {
     label: 'Options',
     items: [
@@ -274,29 +291,36 @@ const items = ref([
         label: 'Add table',
         icon: PrimeIcons.PLUS,
         command: () => addTable(),
+        disabled: !selectedLayoutId.value,
       },
       {
         label: 'Save',
         icon: PrimeIcons.DOWNLOAD,
         command: () => exportData(),
+        active: true,
       },
     ],
-
   },
   {
-    label: 'Saved layouts',
+    label: 'Layouts',
     items: [
       {
-        label: 'Layout 1',
-        icon: PrimeIcons.PENCIL,
+        label: 'Create Layout',
+        icon: PrimeIcons.PLUS,
+        command: () => {
+          const id = UUIDv4();
+          layouts.value.push({ id, name: 'New Layout', tables: [] });
+          selectedLayoutId.value = id;
+        },
       },
-      {
-        label: 'Layout 2',
+      ...layouts.value.map((l) => ({
+        label: l.name,
         icon: PrimeIcons.PENCIL,
-      },
+        command: () => loadLayout(l),
+      })),
     ],
   },
-]);
+]));
 </script>
 
 <style scoped>
