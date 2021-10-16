@@ -263,11 +263,11 @@ function closeDetail() {
 }
 
 onKeyStroke('Delete', (e) => {
-  if (e.target.tagName !== 'INPUT') removeTable();
+  if ((e.target as HTMLElement)?.tagName !== 'INPUT') removeTable();
 });
 
 onKeyStroke('Backspace', (e) => {
-  if (e.target.tagName !== 'INPUT') removeTable();
+  if ((e.target as HTMLElement)?.tagName !== 'INPUT') removeTable();
 });
 
 const items = ref([
