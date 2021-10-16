@@ -9,7 +9,7 @@ specifiers:
   '@typescript-eslint/parser': ^5.0.0
   '@vitejs/plugin-vue': ^1.9.3
   '@vue/compiler-sfc': ^3.2.20
-  '@vueuse/core': ^6.5.3
+  '@vueuse/core': ^6.6.1
   eslint: ^8.0.1
   eslint-config-airbnb-base: ^14.2.1
   eslint-import-resolver-alias: ^1.1.2
@@ -33,7 +33,7 @@ specifiers:
   windicss: ^3.1.9
 
 dependencies:
-  '@vueuse/core': 6.5.3_vue@3.2.20
+  '@vueuse/core': 6.6.1_vue@3.2.20
   interactjs: 1.10.11
   nprogress: 0.2.0
   primeicons: 4.1.0
@@ -461,8 +461,8 @@ packages:
   /@vue/shared/3.2.20:
     resolution: {integrity: sha512-FbpX+hD5BvXCQerEYO7jtAGHlhAkhTQ4KIV73kmLWNlawWhTiVuQxizgVb0BOkX5oG9cIRZ42EG++d/k/Efp0w==}
 
-  /@vueuse/core/6.5.3_vue@3.2.20:
-    resolution: {integrity: sha512-o3CTu4nEqs371sDY5qLBX0r4QOm6GVpm3ApQc2Y+p8OMI2rRGartQo8xRykpUfsyq602A+SVtm/wxIWBkD/KCQ==}
+  /@vueuse/core/6.6.1_vue@3.2.20:
+    resolution: {integrity: sha512-55RYUoZ/n20rgrs/rMAgtlnOAhp8w5ps4W/AxeNKPwpLqHx98FObOY3VfBvXabu8mZ1DeimP3zTCf2LVPdJTPA==}
     peerDependencies:
       '@vue/composition-api': ^1.1.0
       vue: ^2.6.0 || ^3.2.0
@@ -472,13 +472,13 @@ packages:
       vue:
         optional: true
     dependencies:
-      '@vueuse/shared': 6.5.3_vue@3.2.20
+      '@vueuse/shared': 6.6.1_vue@3.2.20
       vue: 3.2.20
       vue-demi: 0.11.4_vue@3.2.20
     dev: false
 
-  /@vueuse/shared/6.5.3_vue@3.2.20:
-    resolution: {integrity: sha512-ChOKu3mECyZeqGJ/gHVm0CaHoZK5/TwNZr1ZM/aqH+RaRNQvC1qkLf1/8PBugzN3yRgC3BtZ/M1kLpGe/BFylw==}
+  /@vueuse/shared/6.6.1_vue@3.2.20:
+    resolution: {integrity: sha512-wAqdcVCSCIWBKU9dgNqQwo3D+eD5ld0Ncfsh2i9Tss5Qt0OgijJ1cxjposrtS32kQCRpVGa0MwjD5kcdHWwykw==}
     peerDependencies:
       '@vue/composition-api': ^1.1.0
       vue: ^2.6.0 || ^3.2.0

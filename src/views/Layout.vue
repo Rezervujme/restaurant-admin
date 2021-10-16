@@ -262,11 +262,7 @@ function closeDetail() {
   selectedTableId.value = '';
 }
 
-onKeyStroke('Delete', (e) => {
-  if ((e.target as HTMLElement)?.tagName !== 'INPUT') removeTable();
-});
-
-onKeyStroke('Backspace', (e) => {
+onKeyStroke(['Delete', 'Backspace'], (e) => {
   if ((e.target as HTMLElement)?.tagName !== 'INPUT') removeTable();
 });
 
