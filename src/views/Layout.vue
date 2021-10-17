@@ -4,94 +4,105 @@
       class="ml-8 mr-4 mb-8 layout-menu"
       :model="items"
     />
-    <div class="mr-8 ml-4 mb-8">
-      <div
-        v-if="currentLayout"
-        class="layout-container layout-container-tables cursor-pointer"
-        @click.self="closeDetail"
-      >
+    <div
+      v-if="currentLayout"
+      class="flex"
+    >
+      <div class="mr-8 ml-4 mb-8">
         <div
-          v-for="table in currentLayout.tables"
-          :id="`table-${table.id}`"
-          :key="table.id"
-          class="h-8 w-8 bg-gray-300 absolute flex justify-center items-center"
-          :class="[table.shape === 'circle' ? 'rounded-full' : '',
-                   table.id === selectedTableId ? 'border border-black' : '']"
-          @mousedown="setInitialLocation"
-          @mouseup="openSettings($event, table.id)"
+          v-if="currentLayout"
+          class="layout-container layout-container-tables cursor-pointer"
+          @click.self="closeDetail"
         >
-          <!--          <div class="table-badge">-->
-          <!--            <p-->
-          <!--              class="text-white text-center text-xs leading-5"-->
-          <!--            >-->
-          <!--              {{ table.label || '?' }}-->
-          <!--            </p>-->
-          <!--          </div>-->
+          <div
+            v-for="table in currentLayout.tables"
+            :id="`table-${table.id}`"
+            :key="table.id"
+            class="h-8 w-8 bg-gray-300 absolute flex justify-center items-center"
+            :class="[table.shape === 'circle' ? 'rounded-full' : '',
+                     table.id === selectedTableId ? 'border border-black' : '']"
+            @mousedown="setInitialLocation"
+            @mouseup="openSettings($event, table.id)"
+          >
+            <!--          <div class="table-badge">-->
+            <!--            <p-->
+            <!--              class="text-white text-center text-xs leading-5"-->
+            <!--            >-->
+            <!--              {{ table.label || '?' }}-->
+            <!--            </p>-->
+            <!--          </div>-->
 
-          <p class="text-center">
-            {{ table.label || '-' }}
-          </p>
+            <p class="text-center">
+              {{ table.label || '-' }}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="layout-container layout-container-details flex-grow mr-8 mb-8 p-4">
+        <div
+          v-if="currentTable"
+          class="h-full flex flex-col"
+        >
+          <div class="flex items-center justify-between mb-4">
+            <h5 class="text-lg mr-8">
+              Označenie:
+            </h5>
+            <InputText
+              v-model="currentTable.label"
+              class="w-2/5"
+            />
+          </div>
+          <div class="flex items-center justify-between mb-4">
+            <h5 class="text-lg mr-8">
+              Tvar:
+            </h5>
+            <Dropdown
+              v-model="currentTable.shape"
+              :options="shapes"
+              option-label="name"
+              option-value="code"
+              class="w-2/5"
+            />
+          </div>
+          <div class="flex items-center justify-between mb-4">
+            <h5 class="text-lg mr-8">
+              Počet miest:
+            </h5>
+            <InputNumber
+              v-model="currentTable.chairs"
+              class="chairs-input"
+            />
+          </div>
+          <div class="flex justify-end mt-auto">
+            <Button
+              class="p-button-danger"
+              icon="pi pi-trash"
+              @click="removeTable"
+            />
+          </div>
+        </div>
+        <div
+          v-else
+          class="h-full flex flex-col"
+        >
+          <div class="flex items-center justify-between mb-4">
+            <h5 class="text-lg mr-8">
+              Názov:
+            </h5>
+            <InputText
+              v-if="currentLayout"
+              v-model="currentLayout.name"
+              class="w-2/5"
+            />
+          </div>
         </div>
       </div>
     </div>
-    <div class="layout-container layout-container-details flex-grow mr-8 mb-8 p-4">
-      <div
-        v-if="currentTable"
-        class="h-full flex flex-col"
-      >
-        <div class="flex items-center justify-between mb-4">
-          <h5 class="text-lg mr-8">
-            Označenie:
-          </h5>
-          <InputText
-            v-model="currentTable.label"
-            class="w-2/5"
-          />
-        </div>
-        <div class="flex items-center justify-between mb-4">
-          <h5 class="text-lg mr-8">
-            Tvar:
-          </h5>
-          <Dropdown
-            v-model="currentTable.shape"
-            :options="shapes"
-            option-label="name"
-            option-value="code"
-            class="w-2/5"
-          />
-        </div>
-        <div class="flex items-center justify-between mb-4">
-          <h5 class="text-lg mr-8">
-            Počet miest:
-          </h5>
-          <InputNumber
-            v-model="currentTable.chairs"
-            class="chairs-input"
-          />
-        </div>
-        <div class="flex justify-end mt-auto">
-          <Button
-            class="p-button-danger"
-            icon="pi pi-trash"
-            @click="removeTable"
-          />
-        </div>
-      </div>
-      <div
-        v-else
-        class="h-full flex flex-col"
-      >
-        <div class="flex items-center justify-between mb-4">
-          <h5 class="text-lg mr-8">
-            Názov:
-          </h5>
-          <InputText
-            v-if="currentLayout"
-            v-model="currentLayout.name"
-            class="w-2/5"
-          />
-        </div>
-      </div>
+    <div
+      v-else
+      class="mr-8 ml-4 mb-8"
+    >
+      <h1>Select a layout to edit</h1>
     </div>
   </div>
 </template>
@@ -104,7 +115,8 @@ import {
 import { PrimeIcons } from 'primevue/api';
 import interact from 'interactjs';
 import { v4 as UUIDv4 } from 'uuid';
-import { onKeyStroke } from '@vueuse/core';
+import { onKeyStroke, tryOnBeforeUnmount, useEventListener } from '@vueuse/core';
+import { onBeforeRouteLeave } from 'vue-router';
 
 interface Table {
   id: string
@@ -283,6 +295,20 @@ onKeyStroke(['Delete', 'Backspace'], (e) => {
   if ((e.target as HTMLElement)?.tagName !== 'INPUT') removeTable();
 });
 
+onBeforeRouteLeave(() => {
+  if (JSON.stringify(toRaw(layouts.value)) === (localStorage.getItem('layouts') ?? '[]')) {
+    return true;
+  }
+  return confirm('leave');
+});
+
+useEventListener(window, 'beforeunload', (e) => {
+  if (JSON.stringify(toRaw(layouts.value)) !== (localStorage.getItem('layouts') ?? '[]')) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
+
 const items = computed(() => ([
   {
     label: 'Options',
@@ -317,6 +343,7 @@ const items = computed(() => ([
         label: l.name,
         icon: PrimeIcons.PENCIL,
         command: () => loadLayout(l),
+        style: { fontWeight: l.id === selectedLayoutId.value ? 500 : 'normal' },
       })),
     ],
   },
