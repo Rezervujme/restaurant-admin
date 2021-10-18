@@ -95,6 +95,13 @@
               class="w-2/5"
             />
           </div>
+          <div class="flex justify-end mt-auto">
+            <Button
+              class="p-button-danger"
+              icon="pi pi-trash"
+              @click="removeLayout"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -115,7 +122,7 @@ import {
 import { PrimeIcons } from 'primevue/api';
 import interact from 'interactjs';
 import { v4 as UUIDv4 } from 'uuid';
-import { onKeyStroke, tryOnBeforeUnmount, useEventListener } from '@vueuse/core';
+import { onKeyStroke, useEventListener } from '@vueuse/core';
 import { onBeforeRouteLeave } from 'vue-router';
 
 interface Table {
@@ -162,7 +169,7 @@ const shapes = ref([
 ]);
 
 function addTable() {
-  if (!selectedLayoutId.value) return;
+  if (!currentLayout.value) return;
   selectedTableId.value = '';
 
   const id = UUIDv4();
@@ -239,6 +246,7 @@ function addTable() {
           console.log(event.type, event.target);
         },
         move(event) {
+          if (!currentLayout.value) return;
           const table = currentLayout.value.tables.find((t) => t.id === id);
           if (!table) return;
 
@@ -252,8 +260,17 @@ function addTable() {
 }
 
 function removeTable() {
-  currentLayout.value.tables = currentLayout.value.tables
-    .filter((table) => table.id !== currentTable.value?.id);
+  if (currentLayout.value) {
+    currentLayout.value.tables = currentLayout.value.tables
+      .filter((table) => table.id !== currentTable.value?.id);
+  }
+}
+
+function removeLayout() {
+  if (layouts.value) {
+    layouts.value = layouts.value
+      .filter((layout) => layout.id !== currentLayout.value?.id);
+  }
 }
 
 function openSettings(e: MouseEvent, tableId: string) {
@@ -291,9 +308,9 @@ function loadLayout(l: Layout) {
   selectedLayoutId.value = l.id;
 }
 
-onKeyStroke(['Delete', 'Backspace'], (e) => {
-  if ((e.target as HTMLElement)?.tagName !== 'INPUT') removeTable();
-});
+// onKeyStroke(['Delete', 'Backspace'], (e) => {
+//   if ((e.target as HTMLElement).tagName !== 'INPUT') removeTable();
+// });
 
 onBeforeRouteLeave(() => {
   if (JSON.stringify(toRaw(layouts.value)) === (localStorage.getItem('layouts') ?? '[]')) {
