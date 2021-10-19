@@ -21,6 +21,7 @@
             class="h-8 w-8 bg-gray-300 absolute flex justify-center items-center"
             :class="[table.shape === 'circle' ? 'rounded-full' : '',
                      table.id === selectedTableId ? 'border border-black' : '']"
+            @load="test"
             @mousedown="setInitialLocation"
             @mouseup="openSettings($event, table.id)"
           >
@@ -117,7 +118,7 @@
 <script lang="ts" setup>
 /* eslint-disable no-param-reassign */
 import {
-  computed, ref, toRaw,
+  computed, nextTick, ref, toRaw,
 } from 'vue';
 import { PrimeIcons } from 'primevue/api';
 import interact from 'interactjs';
@@ -266,6 +267,10 @@ function removeTable() {
   }
 }
 
+function test() {
+  console.log('test');
+}
+
 function removeLayout() {
   if (layouts.value) {
     layouts.value = layouts.value
@@ -306,6 +311,39 @@ function closeDetail() {
 
 function loadLayout(l: Layout) {
   selectedLayoutId.value = l.id;
+  nextTick(() => {
+    currentLayout.value?.tables.forEach((table) => {
+      (document.querySelector(`#table-${table.id}`) as HTMLDivElement).style.transform = `translate(${table.position.x}px, ${table.position.y}px)`;
+
+      interact(`#table-${table.id}`).draggable({
+        modifiers: [
+          interact.modifiers.snap({
+            offset: 'startCoords',
+            targets: [interact.snappers.grid({
+              x: 32,
+              y: 32,
+            })],
+          }),
+          interact.modifiers.restrictRect({
+            restriction: 'parent',
+          }),
+        ],
+        listeners: {
+          start(event) {
+            console.log(event.type, event.target);
+          },
+          move(event) {
+            if (!currentLayout.value) return;
+
+            table.position.x += event.dx;
+            table.position.y += event.dy;
+
+            event.target.style.transform = `translate(${table.position.x}px, ${table.position.y}px)`;
+          },
+        },
+      });
+    });
+  });
 }
 
 // onKeyStroke(['Delete', 'Backspace'], (e) => {
