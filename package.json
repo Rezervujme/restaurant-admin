@@ -37,7 +37,7 @@
     "unplugin-vue-components": "^0.15.6",
     "vite": "^2.6.7",
     "vite-plugin-windicss": "^1.4.11",
-    "vue-eslint-parser": "^7.11.0",
+    "vue-eslint-parser": "^8.0.0",
     "vue-tsc": "^0.28.6",
     "windicss": "^3.1.9"
   }
