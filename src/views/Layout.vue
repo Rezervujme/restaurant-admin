@@ -122,7 +122,7 @@ import {
 import { PrimeIcons } from 'primevue/api';
 import interact from 'interactjs';
 import { v4 as UUIDv4 } from 'uuid';
-import { onKeyStroke, useEventListener } from '@vueuse/core';
+import { useEventListener } from '@vueuse/core';
 import { onBeforeRouteLeave } from 'vue-router';
 
 interface Table {
@@ -316,6 +316,7 @@ onBeforeRouteLeave(() => {
   if (JSON.stringify(toRaw(layouts.value)) === (localStorage.getItem('layouts') ?? '[]')) {
     return true;
   }
+  // eslint-disable-next-line no-restricted-globals
   return confirm('leave');
 });
 
