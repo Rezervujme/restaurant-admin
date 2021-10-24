@@ -1,4 +1,5 @@
 import { createApp } from 'vue';
+import { createPinia } from 'pinia';
 import PrimeVue from 'primevue/config';
 
 // eslint-disable-next-line import/no-unresolved
@@ -15,12 +16,11 @@ import '@/theme/index.css';
 
 import App from '@/App.vue';
 import router from '@/router';
-import { store, key } from '@/store';
 
 const app = createApp(App)
   .use(PrimeVue)
-  .use(store, key)
-  .use(router);
+  .use(router)
+  .use(createPinia());
 
 router.isReady().then(() => {
   app.mount('#app');
