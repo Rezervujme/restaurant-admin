@@ -31,7 +31,7 @@
         <Textarea
           v-model="restaurantInfo.openingHours"
           rows="7"
-          placeholder="Pondelok: 10:00 - 20:00&#10;Utorok: 10:00 - 20:00&#10;Streda: 10:00 - 20:00&#10;Štvrtok: 10:00 - 20:00&#10;Piatok: 10:00 - 20:00&#10;Sobota: 10:00 - 20:00&#10;Nedeľa: 10:00 - 20:00&#10;"
+          :placeholder="openingHoursPlaceholder"
           class="resize-none w-full openinghours-textarea"
         />
       </div>
@@ -82,6 +82,14 @@ interface RestaurantInfo {
   reserveDelay: string,
   type: string
 }
+
+const openingHoursPlaceholder = `Pondelok: 10:00 - 20:00
+Utorok: 10:00 - 20:00
+Streda: 10:00 - 20:00
+Štvrtok: 10:00 - 20:00
+Piatok: 10:00 - 20:00
+Sobota: 10:00 - 20:00
+Nedeľa: 10:00 - 20:00`;
 
 const restaurantInfo = ref<RestaurantInfo>({
   name: '', address: '', openingHours: '', phoneNumber: '', reserveDelay: '', type: '',
