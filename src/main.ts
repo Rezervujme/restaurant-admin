@@ -8,7 +8,7 @@ import 'virtual:windi.css';
 // eslint-disable-next-line import/no-unresolved
 import 'virtual:windi-devtools';
 
-import 'primevue/resources/themes/saga-blue/theme.css';
+import 'primevue/resources/themes/tailwind-light/theme.css';
 import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
 
