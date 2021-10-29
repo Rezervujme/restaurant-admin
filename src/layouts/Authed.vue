@@ -4,7 +4,7 @@
       <div class="flex items-center justify-end ml-4">
         <img
           class="mr-8 h-10 w-auto"
-          src="@/assets/login-logo.svg"
+          src="@/assets/rezervujme-logo.svg"
           alt="Workflow"
         >
         <router-link

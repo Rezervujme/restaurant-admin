@@ -3,8 +3,8 @@
     <div class="max-w-md w-full space-y-8">
       <div>
         <img
-          class="mx-auto h-12 w-auto"
-          src="@/assets/login-logo.svg"
+          class="mx-auto h-24 w-auto"
+          src="@/assets/rezervujme-logo.svg"
           alt="Workflow"
         >
         <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
