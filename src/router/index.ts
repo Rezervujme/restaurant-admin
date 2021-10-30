@@ -10,11 +10,11 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import('@/views/Login.vue'),
+    component: () => import('@/views/LoginView.vue'),
   },
   {
     path: '/authed/',
-    component: () => import('@/layouts/Authed.vue'),
+    component: () => import('@/layouts/AuthedLayout.vue'),
     children: [
       {
         path: '',
@@ -23,17 +23,17 @@ const routes: RouteRecordRaw[] = [
       {
         path: 'home',
         name: 'Home',
-        component: () => import('@/views/Home.vue'),
+        component: () => import('@/views/HomeView.vue'),
       },
       {
         path: 'layout',
         name: 'Layout',
-        component: () => import('@/views/Layout.vue'),
+        component: () => import('@/views/LayoutView.vue'),
       },
       {
         path: 'about',
         name: 'About',
-        component: () => import('@/views/About.vue'),
+        component: () => import('@/views/AboutView.vue'),
       },
     ],
   },
