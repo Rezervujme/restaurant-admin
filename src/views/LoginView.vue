@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
-    <div class="max-w-md w-full space-y-8">
+    <div class="max-w-md w-full space-y-8 relative">
       <div>
         <img
           class="mx-auto h-24 w-auto"
@@ -24,6 +24,7 @@
           >Email address</label>
           <input
             id="email-address"
+            v-model="loginCredentials.login"
             name="email"
             type="email"
             autocomplete="email"
@@ -41,6 +42,7 @@
           >Password</label>
           <input
             id="password"
+            v-model="loginCredentials.password"
             name="password"
             type="password"
             autocomplete="current-password"
@@ -62,12 +64,6 @@
             focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
           @click="login"
         >
-          <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-            <LockClosedIcon
-              class="h-5 w-5 text-red-500 group-hover:text-red-400"
-              aria-hidden="true"
-            />
-          </span>
           Prihlásiť sa
         </button>
       </div>
@@ -81,19 +77,47 @@
           </a>
         </div>
       </div>
+      <Message
+        v-if="message.severity && message.content"
+        class="absolute w-full"
+        :severity="message.severity"
+        @close="message = { severity: '', content: '' }"
+      >
+        {{ message.content }}
+      </Message>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
+import { ref } from 'vue';
+import { AxiosError } from 'axios';
 import { useUserStore } from '@/store/user';
 
 const router = useRouter();
 const userStore = useUserStore();
 
-function login() {
-  userStore.login('meno', 'heslo');
-  router.push('/authed');
+interface Message {
+  severity: string
+  content: string
+}
+const message = ref<Message>({ severity: '', content: '' });
+
+interface LoginCredentials {
+  login: string
+  password: string
+}
+
+const loginCredentials = ref<LoginCredentials>({ login: '', password: '' });
+
+async function login() {
+  try {
+    await userStore.login(loginCredentials.value.login, loginCredentials.value.password);
+    await router.push('/authed');
+  } catch (err) {
+    const error = err as AxiosError;
+    message.value = { severity: 'error', content: error.response?.data.error };
+  }
 }
 </script>

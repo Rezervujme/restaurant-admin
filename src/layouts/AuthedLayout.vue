@@ -31,13 +31,26 @@
       </div>
     </template>
     <template #right>
-      <router-link
-        to="/login"
-        class="mr-4 text-lg"
+      <p
+        class="mr-4 text-lg cursor-pointer"
+        @click="logout"
       >
         Log out
-      </router-link>
+      </p>
     </template>
   </Toolbar>
   <router-view />
 </template>
+
+<script setup lang="ts">
+import { useRouter } from 'vue-router';
+import { useUserStore } from '@/store/user';
+
+const userStore = useUserStore();
+const router = useRouter();
+
+async function logout() {
+  await userStore.logout();
+  router.push('/login');
+}
+</script>
