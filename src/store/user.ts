@@ -15,7 +15,7 @@ export const useUserStore = defineStore('user', {
       const token = localStorage.getItem('token');
       const user = localStorage.getItem('user');
       if (!token || !user) {
-        this.logout();
+        await this.logout();
       } else {
         this.token = token;
         this.user = JSON.parse(user);
