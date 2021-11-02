@@ -123,13 +123,14 @@
 <script lang="ts" setup>
 /* eslint-disable no-param-reassign */
 import {
-  computed, nextTick, ref, toRaw,
+  computed, nextTick, onBeforeMount, ref, toRaw,
 } from 'vue';
 import { PrimeIcons } from 'primevue/api';
 import interact from 'interactjs';
 import { v4 as UUIDv4 } from 'uuid';
 import { useEventListener } from '@vueuse/core';
 import { onBeforeRouteLeave } from 'vue-router';
+import { useRestaurantStore } from '@/store/restaurant';
 
 interface Table {
   id: string
@@ -151,6 +152,10 @@ interface Layout {
   name: string
   tables: Table[]
 }
+
+const restaurantStore = useRestaurantStore();
+restaurantStore.fetchRestaurantInfo();
+
 const layouts = ref<Layout[]>(JSON.parse(localStorage.getItem('layouts') ?? '[]'));
 // const layout = ref<Layout>({ id: UUIDv4(), name: 'New Layout', tables: [] });
 

@@ -11,27 +11,31 @@ export const useUserStore = defineStore('user', {
     isLoggedIn: (state) => !!state.token,
   },
   actions: {
-    async init() {
+    init() {
       const token = localStorage.getItem('token');
       const user = localStorage.getItem('user');
-      if (!token || !user) {
-        await this.logout();
-      } else {
-        this.token = token;
+      if (token && user) {
+        this.token = JSON.parse(token);
         this.user = JSON.parse(user);
       }
     },
+
     async login(login: string, password: string) {
       const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, { login, password });
 
       this.token = data.data.token;
       this.user = data.data.user;
-      localStorage.setItem('token', this.token);
+      localStorage.setItem('token', JSON.stringify(this.token));
       localStorage.setItem('user', JSON.stringify(this.user));
-
-      // console.log(login, password);
     },
+
     async logout() {
+      try {
+        await axios.post(`${import.meta.env.VITE_API_URL}/auth/invalidate`, undefined, { headers: { Authorization: `Bearer ${this.token}` } });
+      } catch (err) {
+        console.log(err);
+      }
+
       this.token = '';
       this.user = {};
       localStorage.removeItem('token');

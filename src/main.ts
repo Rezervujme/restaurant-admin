@@ -14,9 +14,20 @@ import 'primeicons/primeicons.css';
 
 import '@/theme/index.css';
 
+import axios from 'axios';
 import App from '@/App.vue';
 import router from '@/router';
 import { useUserStore } from '@/store/user';
+
+axios.interceptors.response.use((response) => response, (error) => {
+  if (error.response.status === 401) {
+    // place your reentry code
+    const userStore = useUserStore();
+    userStore.logout();
+    router.push('/');
+  }
+  return error;
+});
 
 const app = createApp(App)
   .use(PrimeVue)
@@ -24,8 +35,8 @@ const app = createApp(App)
   .use(createPinia());
 
 const userStore = useUserStore();
-userStore.init().then(() => {
-  router.isReady().then(() => {
-    app.mount('#app');
-  });
+userStore.init();
+
+router.isReady().then(() => {
+  app.mount('#app');
 });

@@ -12,7 +12,7 @@
           Názov Reštaurácie
         </p>
         <InputText
-          v-model="restaurantInfo.name"
+          v-model="restaurantStore.restaurant.name"
           placeholder="Moja reštaurácia"
           class="w-full"
         />
@@ -22,7 +22,7 @@
           Adresa Reštaurácie
         </p>
         <InputText
-          v-model="restaurantInfo.address"
+          v-model="restaurantStore.restaurant.address"
           placeholder="Súmračná 25, 821 02 Bratislava"
           class="w-full"
         />
@@ -32,7 +32,7 @@
           Otváracie hodiny
         </p>
         <Textarea
-          v-model="restaurantInfo.openingHours"
+          v-model="restaurantStore.restaurant.opening_hours"
           rows="7"
           :placeholder="openingHoursPlaceholder"
           class="resize-none w-full openinghours-textarea"
@@ -44,7 +44,7 @@
           Kontakt
         </p>
         <InputText
-          v-model="restaurantInfo.phoneNumber"
+          v-model="restaurantStore.restaurant.telephone_number"
           placeholder="+421 123 456 789"
           type="tel"
           class="w-full"
@@ -55,7 +55,7 @@
           Minimálna doba rezervácie vopred
         </p>
         <InputText
-          v-model="restaurantInfo.reserveDelay"
+          v-model="restaurantStore.restaurant.reservation_advance_hours"
           placeholder="2 hodiny"
           class="w-full"
         />
@@ -65,7 +65,7 @@
           Typ reštaurácie
         </p>
         <InputText
-          v-model="restaurantInfo.type"
+          v-model="restaurantStore.restaurant.description"
           placeholder="Formálna/Neformálna..."
           class="w-full"
         />
@@ -83,16 +83,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, toRaw } from 'vue';
+import { useRestaurantStore } from '@/store/restaurant';
 
-interface RestaurantInfo {
-  name: string
-  address: string
-  openingHours: string
-  phoneNumber: string,
-  reserveDelay: string,
-  type: string
-}
+const restaurantStore = useRestaurantStore();
+restaurantStore.fetchRestaurantInfo();
 
 const openingHoursPlaceholder = `Pondelok: 10:00 - 20:00
 Utorok: 10:00 - 20:00
@@ -102,11 +96,8 @@ Piatok: 10:00 - 20:00
 Sobota: 10:00 - 20:00
 Nedeľa: 10:00 - 20:00`;
 
-const restaurantInfo = ref<RestaurantInfo>(JSON.parse(localStorage.getItem('about') ?? '{"name": "","address": "","openingHours": "","phoneNumber": "","reserveDelay": "","type": ""}') as RestaurantInfo);
-
-console.log(restaurantInfo.value);
 function save() {
-  localStorage.setItem('about', JSON.stringify(toRaw(restaurantInfo.value)));
+  console.log(restaurantStore.restaurant);
 }
 </script>
 

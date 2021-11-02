@@ -3,7 +3,7 @@ import { RouteRecordRaw, createRouter, createWebHashHistory } from 'vue-router';
 import NProgress from 'nprogress';
 import { useUserStore } from '@/store/user';
 
-function loggedInGuard() {
+async function loggedInGuard() {
   const userStore = useUserStore();
   if (!userStore.isLoggedIn) {
     return '/login';
