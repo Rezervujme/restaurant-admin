@@ -123,7 +123,7 @@
 <script lang="ts" setup>
 /* eslint-disable no-param-reassign */
 import {
-  computed, nextTick, onBeforeMount, ref, toRaw,
+  computed, nextTick, ref, toRaw,
 } from 'vue';
 import { PrimeIcons } from 'primevue/api';
 import interact from 'interactjs';
