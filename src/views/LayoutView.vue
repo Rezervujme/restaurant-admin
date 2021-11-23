@@ -123,7 +123,7 @@
 <script lang="ts" setup>
 /* eslint-disable no-param-reassign */
 import {
-  computed, nextTick, onBeforeMount, ref, toRaw,
+  computed, nextTick, ref, toRaw,
 } from 'vue';
 import { PrimeIcons } from 'primevue/api';
 import interact from 'interactjs';
@@ -131,44 +131,24 @@ import { v4 as UUIDv4 } from 'uuid';
 import { useEventListener } from '@vueuse/core';
 import { onBeforeRouteLeave } from 'vue-router';
 import { useRestaurantStore } from '@/store/restaurant';
-
-interface Table {
-  id: string
-  label: string
-  shape: 'square'|'circle'
-  position: {
-    x: number
-    y: number
-  }
-  size: {
-    height: number
-    width: number
-  }
-  chairs: number
-}
-
-interface Layout {
-  id: string;
-  name: string
-  tables: Table[]
-}
+import { LayoutNew, TableNew } from '@/interfaces/restaurant';
 
 const restaurantStore = useRestaurantStore();
 restaurantStore.fetchRestaurantInfo();
 
-const layouts = ref<Layout[]>(JSON.parse(localStorage.getItem('layouts') ?? '[]'));
-// const layout = ref<Layout>({ id: UUIDv4(), name: 'New Layout', tables: [] });
+const layouts = ref<LayoutNew[]>(JSON.parse(localStorage.getItem('layouts') ?? '[]'));
+// const layout = ref<LayoutNew>({ id: UUIDv4(), name: 'New LayoutNew', tables: [] });
 
 const selectedLayoutId = ref<string>('');
 
-const currentLayout = computed<Layout|undefined>(
+const currentLayout = computed<LayoutNew|undefined>(
   () => layouts.value.find((l) => l.id === selectedLayoutId.value),
 );
 
 const selectedTableId = ref<string>('');
 
-const currentTable = computed<Table|undefined>(
-  () => currentLayout.value?.tables.find((t) => t.id === selectedTableId.value),
+const currentTable = computed<TableNew|undefined>(
+  () => currentLayout.value?.tables.find((t) => t.uuid === selectedTableId.value),
 );
 
 const startX = ref<number>(0);
@@ -183,9 +163,9 @@ function addTable() {
   if (!currentLayout.value) return;
   selectedTableId.value = '';
 
-  const id = UUIDv4();
+  const uuid = UUIDv4();
   currentLayout.value.tables.push({
-    id,
+    uuid,
     position: {
       x: 0,
       y: 0,
@@ -199,7 +179,7 @@ function addTable() {
     chairs: 0,
   });
 
-  interact(`#table-${id}`)
+  interact(`#table-${uuid}`)
   //     .resizable({
   //   // resize from all edges and corners
   //   edges: {
@@ -208,7 +188,7 @@ function addTable() {
   //   margin: 4,
   //   listeners: {
   //     move(event) {
-  //       const table = tables.value.find((t) => t.id === id) as Table;
+  //       const table = tables.value.find((t) => t.id === id) as TableNew;
   //
   //       const { target } = event;
   //
@@ -258,7 +238,7 @@ function addTable() {
         },
         move(event) {
           if (!currentLayout.value) return;
-          const table = currentLayout.value.tables.find((t) => t.id === id);
+          const table = currentLayout.value.tables.find((t) => t.uuid === uuid);
           if (!table) return;
 
           table.position.x += event.dx;
@@ -273,7 +253,7 @@ function addTable() {
 function removeTable() {
   if (currentLayout.value) {
     currentLayout.value.tables = currentLayout.value.tables
-      .filter((table) => table.id !== currentTable.value?.id);
+      .filter((table) => table.uuid !== currentTable.value?.uuid);
   }
 }
 
@@ -298,7 +278,7 @@ function openSettings(e: MouseEvent, tableId: string) {
 }
 
 function exportData() {
-  if (!selectedLayoutId.value) return false;
+  if (!currentLayout.value) return false;
   // const rawLayout = toRaw(currentLayout.value);
   // if (!rawLayout.tables.length) return alert('Cannot export empty layout!');
   // if (rawLayout.tables.some((table) => table.label === '' || table.chairs === 0))
@@ -307,6 +287,7 @@ function exportData() {
   //       && t1.position.x === t2.position.x
   //       && t1.position.y === t2.position.y))) return alert('Tables cannot overlap!');
   // console.log(rawLayout);
+  restaurantStore.saveLayout(currentLayout.value);
   return localStorage.setItem('layouts', JSON.stringify(toRaw(layouts.value)));
 }
 
@@ -319,13 +300,13 @@ function closeDetail() {
   selectedTableId.value = '';
 }
 
-function loadLayout(l: Layout) {
+function loadLayout(l: LayoutNew) {
   selectedLayoutId.value = l.id;
   nextTick(() => {
     currentLayout.value?.tables.forEach((table) => {
-      (document.querySelector(`#table-${table.id}`) as HTMLDivElement).style.transform = `translate(${table.position.x}px, ${table.position.y}px)`;
+      (document.querySelector(`#table-${table.uuid}`) as HTMLDivElement).style.transform = `translate(${table.position.x}px, ${table.position.y}px)`;
 
-      interact(`#table-${table.id}`).draggable({
+      interact(`#table-${table.uuid}`).draggable({
         modifiers: [
           interact.modifiers.snap({
             offset: 'startCoords',

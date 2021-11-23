@@ -97,7 +97,8 @@ Sobota: 10:00 - 20:00
 Nedeľa: 10:00 - 20:00`;
 
 function save() {
-  console.log(restaurantStore.restaurant);
+  console.log(restaurantStore);
+  restaurantStore.updateInfo();
 }
 </script>
 
