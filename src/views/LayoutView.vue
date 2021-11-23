@@ -20,14 +20,14 @@
           >
             <div
               v-for="table in currentLayout.tables"
-              :id="`table-${table.id}`"
-              :key="table.id"
+              :id="`table-${table.uuid}`"
+              :key="table.uuid"
               class="h-8 w-8 bg-gray-300 absolute flex justify-center items-center"
               :class="[table.shape === 'circle' ? 'rounded-full' : '',
-                       table.id === selectedTableId ? 'border border-black' : '']"
+                       table.uuid === selectedTableId ? 'border border-black' : '']"
               @load="test"
               @mousedown="setInitialLocation"
-              @mouseup="openSettings($event, table.id)"
+              @mouseup="openSettings($event, table.uuid)"
             >
               <!--          <div class="table-badge">-->
               <!--            <p-->
