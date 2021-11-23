@@ -1,6 +1,6 @@
 <template>
   <Toolbar class="mb-8">
-    <template #left>
+    <template #start>
       <div class="flex items-center justify-end ml-4">
         <img
           class="mr-8 h-10 w-auto"
@@ -30,7 +30,7 @@
         </router-link>
       </div>
     </template>
-    <template #right>
+    <template #end>
       <p
         class="mr-4 text-lg cursor-pointer"
         @click="logout"
