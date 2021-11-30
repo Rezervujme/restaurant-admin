@@ -22,7 +22,7 @@
               v-for="table in currentLayout.tables"
               :id="`table-${table.uuid}`"
               :key="table.uuid"
-              class="h-8 w-8 bg-gray-300 absolute flex justify-center items-center"
+              class="h-8 w-8 absolute flex justify-center items-center"
               :class="[table.shape === 'circle' ? 'rounded-full' : '',
                        table.uuid === selectedTableId ? 'border border-black' : '']"
               @load="test"
@@ -37,9 +37,14 @@
               <!--            </p>-->
               <!--          </div>-->
 
-              <p class="text-center">
-                {{ table.label || '-' }}
-              </p>
+              <i-ic-outline-table-restaurant
+                v-if="table.shape === 'square'"
+                class="h-8 w-8 text-xl"
+              />
+              <i-ic-outline-table-bar
+                v-if="table.shape === 'circle'"
+                class="h-8 w-8 text-xl"
+              />
             </div>
           </div>
         </div>
@@ -132,6 +137,8 @@ import { useEventListener } from '@vueuse/core';
 import { onBeforeRouteLeave } from 'vue-router';
 import { useRestaurantStore } from '@/store/restaurant';
 import { LayoutNew, TableNew } from '@/interfaces/restaurant';
+
+import IconAccessibility from '~icons/ma';
 
 const restaurantStore = useRestaurantStore();
 restaurantStore.fetchRestaurantInfo();

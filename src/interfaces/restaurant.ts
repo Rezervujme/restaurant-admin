@@ -35,7 +35,7 @@ export interface Restaurant {
     telephone_number: string;
     reservation_advance_hours: number;
     type: string;
-    primary_table?: string;
+    primary_table_view?: string;
     table_views: Layout[];
     created_at: string;
     updated_at: string;
