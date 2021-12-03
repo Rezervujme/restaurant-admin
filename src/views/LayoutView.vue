@@ -138,8 +138,6 @@ import { onBeforeRouteLeave } from 'vue-router';
 import { useRestaurantStore } from '@/store/restaurant';
 import { LayoutNew, TableNew } from '@/interfaces/restaurant';
 
-import IconAccessibility from '~icons/ma';
-
 const restaurantStore = useRestaurantStore();
 restaurantStore.fetchRestaurantInfo();
 
