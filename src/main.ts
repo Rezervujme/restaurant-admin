@@ -21,10 +21,8 @@ import { useUserStore } from '@/store/user';
 
 axios.interceptors.response.use((response) => response, (error) => {
   if (error.response.status === 401) {
-    // place your reentry code
     const userStore = useUserStore();
-    userStore.logout();
-    router.push('/');
+    userStore.logout().then(() => router.push('/'));
   }
   return error;
 });

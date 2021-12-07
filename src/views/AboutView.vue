@@ -70,6 +70,17 @@
           class="w-full"
         />
       </div>
+      <div class="mb-4 mx-4">
+        <p class="mb-1">
+          Primary layout
+        </p>
+        <Dropdown
+          v-model="restaurantStore.restaurant.primary_table_view"
+          :options="[{name: 'Main', value: '1'}]"
+          option-label="name"
+          class="w-full"
+        />
+      </div>
     </div>
     <div class="mb-4 mx-4 flex">
       <Button

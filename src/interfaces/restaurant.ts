@@ -20,6 +20,7 @@ export interface Table {
 
 export interface Layout {
     id: number;
+    name: string;
     tables: Table[]
     rawData: string;
     created_at: string;

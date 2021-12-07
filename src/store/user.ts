@@ -2,7 +2,8 @@ import { defineStore } from 'pinia';
 import axios from 'axios';
 
 // eslint-disable-next-line import/prefer-default-export
-export const useUserStore = defineStore('user', {
+export const useUserStore = defineStore({
+  id: 'user',
   state: () => ({
     token: '',
     user: {},

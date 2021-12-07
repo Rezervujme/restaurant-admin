@@ -6,28 +6,26 @@
     <div class="flex">
       <Menu
         class="mr-4 mb-8 layout-menu"
-        :model="items"
+        :model="menuItems"
       />
       <div
-        v-if="currentLayout"
+        v-if="selectedLayout"
         class="flex"
       >
         <div class="mr-4 ml-4 mb-8">
           <div
-            v-if="currentLayout"
             class="layout-container layout-container-tables cursor-pointer"
             @click.self="closeDetail"
           >
             <div
-              v-for="table in currentLayout.tables"
+              v-for="table in selectedLayout?.tables"
               :id="`table-${table.uuid}`"
               :key="table.uuid"
               class="h-8 w-8 absolute flex justify-center items-center"
               :class="[table.shape === 'circle' ? 'rounded-full' : '',
-                       table.uuid === selectedTableId ? 'border border-black' : '']"
-              @load="test"
+                       table.uuid === selectedTable?.uuid ? 'border border-black' : '']"
               @mousedown="setInitialLocation"
-              @mouseup="openSettings($event, table.uuid)"
+              @mouseup="openSettings($event, table)"
             >
               <!--          <div class="table-badge">-->
               <!--            <p-->
@@ -50,7 +48,7 @@
         </div>
         <div class="layout-container layout-container-details flex-grow mb-8 ml-4 p-4">
           <div
-            v-if="currentTable"
+            v-if="selectedTable"
             class="h-full flex flex-col"
           >
             <div class="flex items-center justify-between mb-4">
@@ -58,7 +56,7 @@
                 Označenie:
               </h5>
               <InputText
-                v-model="currentTable.label"
+                v-model="selectedTable.label"
                 class="w-2/5"
               />
             </div>
@@ -67,7 +65,7 @@
                 Tvar:
               </h5>
               <Dropdown
-                v-model="currentTable.shape"
+                v-model="selectedTable.shape"
                 :options="shapes"
                 option-label="name"
                 option-value="code"
@@ -79,7 +77,7 @@
                 Počet miest:
               </h5>
               <InputNumber
-                v-model="currentTable.chairs"
+                v-model="selectedTable.chairs"
                 class="chairs-input"
               />
             </div>
@@ -100,8 +98,7 @@
                 Názov:
               </h5>
               <InputText
-                v-if="currentLayout"
-                v-model="currentLayout.name"
+                v-model="selectedLayout.name"
                 class="w-2/5"
               />
             </div>
@@ -136,25 +133,16 @@ import { v4 as UUIDv4 } from 'uuid';
 import { useEventListener } from '@vueuse/core';
 import { onBeforeRouteLeave } from 'vue-router';
 import { useRestaurantStore } from '@/store/restaurant';
-import { LayoutNew, TableNew } from '@/interfaces/restaurant';
+import {
+  Layout, LayoutNew, Table, TableNew,
+} from '@/interfaces/restaurant';
 
 const restaurantStore = useRestaurantStore();
 restaurantStore.fetchRestaurantInfo();
 
-const layouts = ref<LayoutNew[]>(JSON.parse(localStorage.getItem('layouts') ?? '[]'));
-// const layout = ref<LayoutNew>({ id: UUIDv4(), name: 'New LayoutNew', tables: [] });
+const selectedLayout = ref<Layout>();
 
-const selectedLayoutId = ref<string>('');
-
-const currentLayout = computed<LayoutNew|undefined>(
-  () => layouts.value.find((l) => l.id === selectedLayoutId.value),
-);
-
-const selectedTableId = ref<string>('');
-
-const currentTable = computed<TableNew|undefined>(
-  () => currentLayout.value?.tables.find((t) => t.uuid === selectedTableId.value),
-);
+const selectedTable = ref<Table>();
 
 const startX = ref<number>(0);
 const startY = ref<number>(0);
@@ -165,26 +153,27 @@ const shapes = ref([
 ]);
 
 function addTable() {
-  if (!currentLayout.value) return;
-  selectedTableId.value = '';
+  // if (!selectedLayout.value) return;
+  // selectedTable.value = undefined;
+  //
+  // const uuid = UUIDv4();
+  // selectedLayout.value.tables.push({
+  //   id: 0,
+  //   uuid,
+  //   position: {
+  //     x: 0,
+  //     y: 0,
+  //   },
+  //   size: {
+  //     width: 32,
+  //     height: 32,
+  //   },
+  //   shape: 'square',
+  //   label: '',
+  //   chairs: 0,
+  // });
 
-  const uuid = UUIDv4();
-  currentLayout.value.tables.push({
-    uuid,
-    position: {
-      x: 0,
-      y: 0,
-    },
-    size: {
-      width: 32,
-      height: 32,
-    },
-    shape: 'square',
-    label: '',
-    chairs: 0,
-  });
-
-  interact(`#table-${uuid}`)
+  // interact(`#table-${uuid}`)
   //     .resizable({
   //   // resize from all edges and corners
   //   edges: {
@@ -224,66 +213,60 @@ function addTable() {
   //   ],
   //
   // })
-    .draggable({
-      modifiers: [
-        interact.modifiers.snap({
-          offset: 'startCoords',
-          targets: [interact.snappers.grid({
-            x: 32,
-            y: 32,
-          })],
-        }),
-        interact.modifiers.restrictRect({
-          restriction: 'parent',
-        }),
-      ],
-      listeners: {
-        start(event) {
-          console.log(event.type, event.target);
-        },
-        move(event) {
-          if (!currentLayout.value) return;
-          const table = currentLayout.value.tables.find((t) => t.uuid === uuid);
-          if (!table) return;
-
-          table.position.x += event.dx;
-          table.position.y += event.dy;
-
-          event.target.style.transform = `translate(${table.position.x}px, ${table.position.y}px)`;
-        },
-      },
-    });
+  //   .draggable({
+  //     modifiers: [
+  //       interact.modifiers.snap({
+  //         offset: 'startCoords',
+  //         targets: [interact.snappers.grid({
+  //           x: 32,
+  //           y: 32,
+  //         })],
+  //       }),
+  //       interact.modifiers.restrictRect({
+  //         restriction: 'parent',
+  //       }),
+  //     ],
+  //     listeners: {
+  //       start(event) {
+  //         console.log(event.type, event.target);
+  //       },
+  //       move(event) {
+  //         if (!selectedLayout.value) return;
+  //         const table = selectedLayout.value.tables.find((t) => t.uuid === uuid);
+  //         if (!table) return;
+  //
+  //         table.position.x += event.dx;
+  //         table.position.y += event.dy;
+  //
+  //         event.target.style.transform = `translate(${table.position.x}px, ${table.position.y}px)`;
+  //       },
+  //     },
+  //   });
 }
 
 function removeTable() {
-  if (currentLayout.value) {
-    currentLayout.value.tables = currentLayout.value.tables
-      .filter((table) => table.uuid !== currentTable.value?.uuid);
-  }
-}
-
-function test() {
-  console.log('test');
+  // if (currentLayout.value) {
+  //   currentLayout.value.tables = currentLayout.value.tables
+  //     .filter((table) => table.uuid !== currentTable.value?.uuid);
+  // }
 }
 
 function removeLayout() {
-  if (layouts.value) {
-    layouts.value = layouts.value
-      .filter((layout) => layout.id !== currentLayout.value?.id);
-  }
+//   restaurantStore.restaurant.table_views = restaurantStore.restaurant.table_views
+//     .filter((layout) => layout.id !== currentLayout.value?.id);
 }
 
-function openSettings(e: MouseEvent, tableId: string) {
+function openSettings(e: MouseEvent, table: Table) {
   const diffX = Math.abs(e.pageX - startX.value);
   const diffY = Math.abs(e.pageY - startY.value);
 
   if (diffX < 10 && diffY < 10) {
-    selectedTableId.value = tableId;
+    selectedTable.value = table;
   }
 }
 
 function exportData() {
-  if (!currentLayout.value) return false;
+  if (!selectedLayout.value) return;
   // const rawLayout = toRaw(currentLayout.value);
   // if (!rawLayout.tables.length) return alert('Cannot export empty layout!');
   // if (rawLayout.tables.some((table) => table.label === '' || table.chairs === 0))
@@ -292,8 +275,7 @@ function exportData() {
   //       && t1.position.x === t2.position.x
   //       && t1.position.y === t2.position.y))) return alert('Tables cannot overlap!');
   // console.log(rawLayout);
-  restaurantStore.saveLayout(currentLayout.value);
-  return localStorage.setItem('layouts', JSON.stringify(toRaw(layouts.value)));
+  restaurantStore.saveLayout(selectedLayout.value);
 }
 
 function setInitialLocation(e: MouseEvent) {
@@ -302,13 +284,14 @@ function setInitialLocation(e: MouseEvent) {
 }
 
 function closeDetail() {
-  selectedTableId.value = '';
+  selectedTable.value = undefined;
 }
 
-function loadLayout(l: LayoutNew) {
-  selectedLayoutId.value = l.id;
+function loadLayout(layout: Layout) {
+  selectedLayout.value = restaurantStore.restaurant.table_views
+    .find((tableView) => tableView.id === layout.id);
   nextTick(() => {
-    currentLayout.value?.tables.forEach((table) => {
+    selectedLayout.value?.tables.forEach((table) => {
       (document.querySelector(`#table-${table.uuid}`) as HTMLDivElement).style.transform = `translate(${table.position.x}px, ${table.position.y}px)`;
 
       interact(`#table-${table.uuid}`).draggable({
@@ -329,8 +312,6 @@ function loadLayout(l: LayoutNew) {
             console.log(event.type, event.target);
           },
           move(event) {
-            if (!currentLayout.value) return;
-
             table.position.x += event.dx;
             table.position.y += event.dy;
 
@@ -342,26 +323,7 @@ function loadLayout(l: LayoutNew) {
   });
 }
 
-// onKeyStroke(['Delete', 'Backspace'], (e) => {
-//   if ((e.target as HTMLElement).tagName !== 'INPUT') removeTable();
-// });
-
-onBeforeRouteLeave(() => {
-  if (JSON.stringify(toRaw(layouts.value)) === (localStorage.getItem('layouts') ?? '[]')) {
-    return true;
-  }
-  // eslint-disable-next-line no-restricted-globals
-  return confirm('leave');
-});
-
-useEventListener(window, 'beforeunload', (e) => {
-  if (JSON.stringify(toRaw(layouts.value)) !== (localStorage.getItem('layouts') ?? '[]')) {
-    e.preventDefault();
-    e.returnValue = '';
-  }
-});
-
-const items = computed(() => ([
+const menuItems = computed(() => ([
   {
     label: 'Options',
     items: [
@@ -369,7 +331,7 @@ const items = computed(() => ([
         label: 'Add table',
         icon: PrimeIcons.PLUS,
         command: () => addTable(),
-        disabled: !selectedLayoutId.value,
+        disabled: !selectedLayout.value,
       },
       {
         label: 'Save',
@@ -386,17 +348,17 @@ const items = computed(() => ([
         label: 'Create Layout',
         icon: PrimeIcons.PLUS,
         command: () => {
-          const id = UUIDv4();
-          layouts.value.push({ id, name: 'New Layout', tables: [] });
-          selectedLayoutId.value = id;
+          // const id = UUIDv4();
+          // restaurantStore.restaurant.table_views.value.push({ id, name: 'New Layout', tables: [] });
+          // selectedLayoutId.value = id;
         },
       },
-      ...layouts.value.map((l) => ({
-        label: l.name,
+      ...restaurantStore.restaurant.table_views.map((l) => ({
+        label: l.id,
         icon: PrimeIcons.PENCIL,
         command: () => loadLayout(l),
         style: {
-          backgroundColor: l.id === selectedLayoutId.value ? '#f4f4f4' : '#fff',
+          backgroundColor: l.id === selectedLayout.value?.id ? '#f4f4f4' : '#fff',
         },
       })),
     ],

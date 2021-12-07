@@ -2,10 +2,11 @@ import { defineStore } from 'pinia';
 import axios from 'axios';
 
 import { useUserStore } from '@/store/user';
-import { LayoutNew, Restaurant } from '@/interfaces/restaurant';
+import { Layout, LayoutNew, Restaurant } from '@/interfaces/restaurant';
 
 // eslint-disable-next-line import/prefer-default-export
-export const useRestaurantStore = defineStore('restaurant', {
+export const useRestaurantStore = defineStore({
+  id: 'restaurant',
   state: () => ({
     restaurant: {} as Restaurant,
   }),
@@ -29,7 +30,7 @@ export const useRestaurantStore = defineStore('restaurant', {
         type: this.restaurant.type,
       }, { headers: { Authorization: `Bearer ${userStore.token}` } });
     },
-    async saveLayout(layout: LayoutNew) {
+    async saveLayout(layout: Layout) {
       console.log(layout);
       const userStore = useUserStore();
       await axios.post(`${import.meta.env.VITE_API_URL}/tableviews`, { name: layout.name, tables: layout.tables }, { headers: { Authorization: `Bearer ${userStore.token}` } });
