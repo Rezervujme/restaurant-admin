@@ -344,4 +344,12 @@ const menuItems = computed(() => ([
 .p-menu {
   min-width: 12.5rem;
 }
+
+.layout-menu {
+  height: 768px;
+  overflow: auto;
+  border-radius: 3px;
+  border: none;
+  outline: 1px solid #DEE2E6;
+}
 </style>
