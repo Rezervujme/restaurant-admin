@@ -11,6 +11,7 @@ import 'virtual:windi-devtools';
 import 'primevue/resources/themes/tailwind-light/theme.css';
 import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css';
+import ToastService from 'primevue/toastservice';
 
 import '@/theme/index.css';
 
@@ -30,7 +31,8 @@ axios.interceptors.response.use((response) => response, (error) => {
 const app = createApp(App)
   .use(PrimeVue)
   .use(router)
-  .use(createPinia());
+  .use(createPinia())
+  .use(ToastService);
 
 const userStore = useUserStore();
 userStore.init();

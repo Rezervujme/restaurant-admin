@@ -5,6 +5,7 @@
     </h1>
     <div class="flex">
       <Menu
+        v-if="Object.keys(restaurantStore.restaurant).length"
         class="mr-4 mb-8 layout-menu"
         :model="menuItems"
       />
@@ -58,6 +59,7 @@
               <InputText
                 v-model="selectedTable.label"
                 class="w-2/5"
+                @blur="saveLayout"
               />
             </div>
             <div class="flex items-center justify-between mb-4">
@@ -70,6 +72,7 @@
                 option-label="name"
                 option-value="code"
                 class="w-2/5"
+                @change="saveLayout"
               />
             </div>
             <div class="flex items-center justify-between mb-4">
@@ -79,6 +82,7 @@
               <InputNumber
                 v-model="selectedTable.chairs"
                 class="chairs-input"
+                @blur="saveLayout"
               />
             </div>
             <div class="flex justify-end mt-auto">
@@ -100,6 +104,7 @@
               <InputText
                 v-model="selectedLayout.name"
                 class="w-2/5"
+                @blur="saveLayout"
               />
             </div>
             <div class="flex justify-end mt-auto">
@@ -125,16 +130,15 @@
 <script lang="ts" setup>
 /* eslint-disable no-param-reassign */
 import {
-  computed, nextTick, ref, toRaw,
+  computed, nextTick, ref, watch,
 } from 'vue';
 import { PrimeIcons } from 'primevue/api';
 import interact from 'interactjs';
 import { v4 as UUIDv4 } from 'uuid';
-import { useEventListener } from '@vueuse/core';
-import { onBeforeRouteLeave } from 'vue-router';
+import { cloneDeep } from 'lodash-es';
 import { useRestaurantStore } from '@/store/restaurant';
 import {
-  Layout, LayoutNew, Table, TableNew,
+  Layout, Table,
 } from '@/interfaces/restaurant';
 
 const restaurantStore = useRestaurantStore();
@@ -144,128 +148,17 @@ const selectedLayout = ref<Layout>();
 
 const selectedTable = ref<Table>();
 
-const startX = ref<number>(0);
-const startY = ref<number>(0);
+const startX = ref(0);
+const startY = ref(0);
 
 const shapes = ref([
   { name: 'Štvorec', code: 'square' },
   { name: 'Kruh', code: 'circle' },
 ]);
 
-function addTable() {
-  // if (!selectedLayout.value) return;
-  // selectedTable.value = undefined;
-  //
-  // const uuid = UUIDv4();
-  // selectedLayout.value.tables.push({
-  //   id: 0,
-  //   uuid,
-  //   position: {
-  //     x: 0,
-  //     y: 0,
-  //   },
-  //   size: {
-  //     width: 32,
-  //     height: 32,
-  //   },
-  //   shape: 'square',
-  //   label: '',
-  //   chairs: 0,
-  // });
+watch(selectedLayout, () => { selectedTable.value = undefined; });
 
-  // interact(`#table-${uuid}`)
-  //     .resizable({
-  //   // resize from all edges and corners
-  //   edges: {
-  //     left: true, right: true, bottom: true, top: true,
-  //   },
-  //   margin: 4,
-  //   listeners: {
-  //     move(event) {
-  //       const table = tables.value.find((t) => t.id === id) as TableNew;
-  //
-  //       const { target } = event;
-  //
-  //       console.log(event);
-  //       table.size.width = event.rect.width;
-  //       table.size.height = event.rect.height;
-  //
-  //       target.style.width = `${event.rect.width}px`;
-  //       target.style.height = `${event.rect.height}px`;
-  //
-  //       // fix position when resizing top and left
-  //       table.position.x += event.deltaRect.left;
-  //       table.position.y += event.deltaRect.top;
-  //
-  //       target.style.transform = `translate(${table.position.x}px, ${table.position.y}px)`;
-  //     },
-  //   },
-  //   modifiers: [
-  //     // keep the edges inside the parent
-  //     interact.modifiers.restrictEdges({
-  //       outer: 'parent',
-  //     }),
-  //
-  //     // minimum size
-  //     interact.modifiers.restrictSize({
-  //       min: { width: 32, height: 32 },
-  //     }),
-  //   ],
-  //
-  // })
-  //   .draggable({
-  //     modifiers: [
-  //       interact.modifiers.snap({
-  //         offset: 'startCoords',
-  //         targets: [interact.snappers.grid({
-  //           x: 32,
-  //           y: 32,
-  //         })],
-  //       }),
-  //       interact.modifiers.restrictRect({
-  //         restriction: 'parent',
-  //       }),
-  //     ],
-  //     listeners: {
-  //       start(event) {
-  //         console.log(event.type, event.target);
-  //       },
-  //       move(event) {
-  //         if (!selectedLayout.value) return;
-  //         const table = selectedLayout.value.tables.find((t) => t.uuid === uuid);
-  //         if (!table) return;
-  //
-  //         table.position.x += event.dx;
-  //         table.position.y += event.dy;
-  //
-  //         event.target.style.transform = `translate(${table.position.x}px, ${table.position.y}px)`;
-  //       },
-  //     },
-  //   });
-}
-
-function removeTable() {
-  // if (currentLayout.value) {
-  //   currentLayout.value.tables = currentLayout.value.tables
-  //     .filter((table) => table.uuid !== currentTable.value?.uuid);
-  // }
-}
-
-function removeLayout() {
-//   restaurantStore.restaurant.table_views = restaurantStore.restaurant.table_views
-//     .filter((layout) => layout.id !== currentLayout.value?.id);
-}
-
-function openSettings(e: MouseEvent, table: Table) {
-  const diffX = Math.abs(e.pageX - startX.value);
-  const diffY = Math.abs(e.pageY - startY.value);
-
-  if (diffX < 10 && diffY < 10) {
-    selectedTable.value = table;
-  }
-}
-
-function exportData() {
+async function saveLayout() {
   if (!selectedLayout.value) return;
   // const rawLayout = toRaw(currentLayout.value);
   // if (!rawLayout.tables.length) return alert('Cannot export empty layout!');
@@ -275,21 +168,12 @@ function exportData() {
   //       && t1.position.x === t2.position.x
   //       && t1.position.y === t2.position.y))) return alert('Tables cannot overlap!');
   // console.log(rawLayout);
-  restaurantStore.saveLayout(selectedLayout.value);
-}
-
-function setInitialLocation(e: MouseEvent) {
-  startX.value = e.x;
-  startY.value = e.y;
-}
-
-function closeDetail() {
-  selectedTable.value = undefined;
+  await restaurantStore.saveLayout(selectedLayout.value);
 }
 
 function loadLayout(layout: Layout) {
-  selectedLayout.value = restaurantStore.restaurant.table_views
-    .find((tableView) => tableView.id === layout.id);
+  selectedLayout.value = cloneDeep(restaurantStore.restaurant.table_views
+    .find((tableView) => tableView.id === layout.id));
   nextTick(() => {
     selectedLayout.value?.tables.forEach((table) => {
       (document.querySelector(`#table-${table.uuid}`) as HTMLDivElement).style.transform = `translate(${table.position.x}px, ${table.position.y}px)`;
@@ -317,10 +201,70 @@ function loadLayout(layout: Layout) {
 
             event.target.style.transform = `translate(${table.position.x}px, ${table.position.y}px)`;
           },
+          end() {
+            saveLayout();
+          },
         },
       });
     });
   });
+}
+
+async function addTable() {
+  if (!selectedLayout.value) return;
+  selectedTable.value = undefined;
+
+  const uuid = UUIDv4();
+  await restaurantStore.saveLayout({
+    name: selectedLayout.value.name,
+    id: selectedLayout.value.id,
+    tables: [...selectedLayout.value.tables, {
+      id: uuid,
+      position: {
+        x: 0,
+        y: 0,
+      },
+      size: {
+        width: 32,
+        height: 32,
+      },
+      shape: 'square',
+      label: '',
+      chairs: 0,
+    }],
+  });
+  loadLayout(selectedLayout.value);
+}
+
+function removeTable() {
+  if (!selectedLayout.value) return;
+  selectedLayout.value.tables = selectedLayout.value.tables
+    .filter((table) => table.id !== selectedTable.value?.id);
+  saveLayout();
+}
+
+async function removeLayout() {
+  if (!selectedLayout.value) return;
+  await restaurantStore.deleteLayout(selectedLayout.value.id);
+  selectedLayout.value = undefined;
+}
+
+function openSettings(e: MouseEvent, table: Table) {
+  const diffX = Math.abs(e.pageX - startX.value);
+  const diffY = Math.abs(e.pageY - startY.value);
+
+  if (diffX < 10 && diffY < 10) {
+    selectedTable.value = table;
+  }
+}
+
+function setInitialLocation(e: MouseEvent) {
+  startX.value = e.x;
+  startY.value = e.y;
+}
+
+function closeDetail() {
+  selectedTable.value = undefined;
 }
 
 const menuItems = computed(() => ([
@@ -334,27 +278,21 @@ const menuItems = computed(() => ([
         disabled: !selectedLayout.value,
       },
       {
-        label: 'Save',
-        icon: PrimeIcons.DOWNLOAD,
-        command: () => exportData(),
-        active: true,
+        label: 'Create Layout',
+        icon: PrimeIcons.PLUS,
+        command: async () => {
+          await restaurantStore.saveLayout({ name: 'New layout', tables: [] });
+          selectedLayout.value = cloneDeep(restaurantStore.restaurant
+            .table_views[restaurantStore.restaurant.table_views.length - 1]);
+        },
       },
     ],
   },
   {
     label: 'Layouts',
     items: [
-      {
-        label: 'Create Layout',
-        icon: PrimeIcons.PLUS,
-        command: () => {
-          // const id = UUIDv4();
-          // restaurantStore.restaurant.table_views.value.push({ id, name: 'New Layout', tables: [] });
-          // selectedLayoutId.value = id;
-        },
-      },
       ...restaurantStore.restaurant.table_views.map((l) => ({
-        label: l.id,
+        label: l.name,
         icon: PrimeIcons.PENCIL,
         command: () => loadLayout(l),
         style: {
