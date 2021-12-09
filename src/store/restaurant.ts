@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
@@ -21,19 +22,23 @@ export const useRestaurantStore = defineStore({
       );
       this.restaurant = restaurantData.data;
     },
-    async updateInfo() {
+    async updateInfo({
+      name, address, description, opening_hours,
+      telephone_number, reservation_advance_hours,
+      type, primary_table_view,
+    }: Restaurant) {
       const userStore = useUserStore();
       await axios.post(
         `${import.meta.env.VITE_API_URL}/auth/restaurant`,
         {
-          name: this.restaurant.name,
-          address: this.restaurant.address,
-          description: this.restaurant.description,
-          opening_hours: this.restaurant.opening_hours,
-          telephone_number: this.restaurant.telephone_number,
-          reservation_advance_hours: this.restaurant.reservation_advance_hours,
-          type: this.restaurant.type,
-          primary_table_view: this.restaurant.primary_table_view,
+          name,
+          address,
+          description,
+          opening_hours,
+          telephone_number,
+          reservation_advance_hours,
+          type,
+          primary_table_view,
         },
         { headers: { Authorization: `Bearer ${userStore.token}` } },
       );
