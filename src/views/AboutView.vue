@@ -76,8 +76,9 @@
         </p>
         <Dropdown
           v-model="restaurantStore.restaurant.primary_table_view"
-          :options="[{name: 'Main', value: '1'}]"
+          :options="restaurantStore.restaurant.table_views"
           option-label="name"
+          option-value="id"
           class="w-full"
         />
       </div>

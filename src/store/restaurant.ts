@@ -33,6 +33,7 @@ export const useRestaurantStore = defineStore({
           telephone_number: this.restaurant.telephone_number,
           reservation_advance_hours: this.restaurant.reservation_advance_hours,
           type: this.restaurant.type,
+          primary_table_view: this.restaurant.primary_table_view,
         },
         { headers: { Authorization: `Bearer ${userStore.token}` } },
       );
@@ -47,7 +48,7 @@ export const useRestaurantStore = defineStore({
           { name, tables },
           { headers: { Authorization: `Bearer ${userStore.token}` } },
         );
-        this.restaurant.table_views.unshift(response.data);
+        this.restaurant.table_views.push(response.data);
       } else {
         const { data: response } = await axios.put(
           `${import.meta.env.VITE_API_URL}/tableviews/${id}`,

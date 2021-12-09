@@ -16,11 +16,22 @@ import ToastService from 'primevue/toastservice';
 import '@/theme/index.css';
 
 import axios from 'axios';
+import NProgress from 'nprogress';
 import App from '@/App.vue';
 import router from '@/router';
 import { useUserStore } from '@/store/user';
 
-axios.interceptors.response.use((response) => response, (error) => {
+axios.interceptors.request
+  .use(
+    (response) => { NProgress.start(); return response; },
+    (error) => error,
+  );
+
+axios.interceptors.response.use((response) => {
+  NProgress.done();
+  return response;
+}, (error) => {
+  NProgress.done();
   if (error.response.status === 401) {
     const userStore = useUserStore();
     userStore.logout().then(() => router.push('/'));
