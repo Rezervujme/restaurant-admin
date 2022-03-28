@@ -9,12 +9,15 @@
       class="border-bottom-2 m-8 flex justify-between items-center"
     >
       <div>
-        <p class="py-2">
+        <p class="py-1">
+          {{ reservation.user.name }} {{ reservation.user.surname }}
+        </p>
+        <p class="py-1">
           {{ formatDate(reservation.from, reservation.to) }}
         </p>
         <p
           v-if="reservation.note?.length"
-          class="py-2"
+          class="py-1"
         >
           Poznámka: {{ reservation.note }}
         </p>
