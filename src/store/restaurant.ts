@@ -3,17 +3,26 @@ import { defineStore } from 'pinia';
 import axios from 'axios';
 
 import { useUserStore } from '@/store/user';
-import { Restaurant } from '@/interfaces/restaurant';
+import { Reservation, Restaurant } from '@/interfaces/restaurant';
 
 // eslint-disable-next-line import/prefer-default-export
 export const useRestaurantStore = defineStore({
   id: 'restaurant',
   state: () => ({
     restaurant: {} as Restaurant,
+    reservations: [] as Reservation[],
   }),
   getters: {
   },
   actions: {
+    async fetchReservations() {
+      const userStore = useUserStore();
+      const { data: restaurantData } = await axios.get(
+        `${import.meta.env.VITE_API_URL}/reservations`,
+        { headers: { Authorization: `Bearer ${userStore.token}` } },
+      );
+      this.reservations = restaurantData.data;
+    },
     async fetchRestaurantInfo() {
       const userStore = useUserStore();
       const { data: restaurantData } = await axios.get(
@@ -21,6 +30,8 @@ export const useRestaurantStore = defineStore({
         { headers: { Authorization: `Bearer ${userStore.token}` } },
       );
       this.restaurant = restaurantData.data;
+      // @ts-expect-error typing
+      this.restaurant.primary_table_view = this.restaurant.primary_table_view.id;
     },
     async updateInfo({
       name, address, description, opening_hours,

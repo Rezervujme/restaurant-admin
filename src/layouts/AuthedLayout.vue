@@ -12,21 +12,21 @@
           class="mx-4 text-lg"
           active-class="font-semibold text-red-600"
         >
-          Home
+          Rezervácie
         </router-link>
         <router-link
           to="/authed/layout"
           class="mx-4 text-lg"
           active-class="font-semibold text-red-600"
         >
-          Layout
+          Layouty
         </router-link>
         <router-link
           to="/authed/about"
           class="mx-4 text-lg"
           active-class="font-semibold text-red-600"
         >
-          About
+          O reštaurácií
         </router-link>
       </div>
     </template>
@@ -35,7 +35,7 @@
         class="mr-4 text-lg cursor-pointer"
         @click="logout"
       >
-        Log out
+        Odhlásiť sa
       </p>
     </template>
   </Toolbar>

@@ -1,7 +1,7 @@
 <template>
   <div class="mx-8">
     <h1 class="text-2xl font-semibold mb-4">
-      About your restaurant
+      O reštaurácií
     </h1>
     <div v-if="Object.keys(restaurant).length">
       <div
@@ -73,7 +73,7 @@
         </div>
         <div class="mb-4 mx-4">
           <p class="mb-1">
-            Primary layout
+            Aktuálny layout
           </p>
           <Dropdown
             v-model="restaurant.primary_table_view"

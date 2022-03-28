@@ -58,3 +58,15 @@ export interface LayoutNew {
     name: string
     tables: TableNew[]
 }
+
+export interface Reservation {
+    id: number;
+    from: string;
+    to: string;
+    duration: number;
+    price: number;
+    user: Record<string, any>;
+    restaurantTable?: any;
+    note: string;
+    restaurant: Restaurant;
+}

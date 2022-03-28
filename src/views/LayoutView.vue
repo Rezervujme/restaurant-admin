@@ -1,7 +1,7 @@
 <template>
   <div class="mx-8">
     <h1 class="text-2xl font-semibold mb-4">
-      Layout editor
+      Editor layoutov
     </h1>
     <div class="flex">
       <Menu
@@ -121,7 +121,7 @@
         v-else
         class="mr-8 ml-4 mb-8"
       >
-        <h1>Select a layout to edit</h1>
+        <h1>Vyberte layout na úpravu</h1>
       </div>
     </div>
   </div>
@@ -269,16 +269,16 @@ function closeDetail() {
 
 const menuItems = computed(() => ([
   {
-    label: 'Options',
+    label: 'Možnosti',
     items: [
       {
-        label: 'Add table',
+        label: 'Pridať stôl',
         icon: PrimeIcons.PLUS,
         command: () => addTable(),
         disabled: !selectedLayout.value,
       },
       {
-        label: 'Create Layout',
+        label: 'Vytvoriť nový layout',
         icon: PrimeIcons.PLUS,
         command: async () => {
           await restaurantStore.saveLayout({ name: 'New layout', tables: [] });
@@ -289,7 +289,7 @@ const menuItems = computed(() => ([
     ],
   },
   {
-    label: 'Layouts',
+    label: 'Layouty',
     items: [
       ...restaurantStore.restaurant.table_views.map((l) => ({
         label: l.name,

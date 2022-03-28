@@ -67,16 +67,6 @@
           Prihlásiť sa
         </button>
       </div>
-      <div class="flex items-center justify-between">
-        <div class="text-sm ml-auto">
-          <a
-            href="#"
-            class="font-medium text-red-600 hover:text-red-500"
-          >
-            Zabudli ste heslo?
-          </a>
-        </div>
-      </div>
       <Message
         v-if="message.severity && message.content"
         class="absolute w-full"
